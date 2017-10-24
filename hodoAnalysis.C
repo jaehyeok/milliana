@@ -17,7 +17,8 @@ int charToInt(char c)
 //
 void hodoAnalysis()
 {  
-  TH1D *h1 = new TH1D("h1","h1",720,0.5,720.5);
+  TH1D *h1 = new TH1D("h1","h1",840,0.5,840.5);
+  TH1D *h1level = new TH1D("h1level","h1level",10,0,10);
 
   // Get fill, time, lumi  
   vector<int> fill_number;
@@ -25,7 +26,7 @@ void hodoAnalysis()
   vector<int> fill_end;
   vector<Float_t> fill_lumi;
   vector<Float_t> fill_lumi_bril;
-  ifstream finlumi("collisionsTimeList.txt");
+  ifstream finlumi("../collisionsTimeList.txt");
   string linelumi;  
   if(finlumi.is_open()) {
       while(finlumi.good()){
@@ -72,9 +73,9 @@ void hodoAnalysis()
   for(int i=0; i<number_of_fills; i++) t_beam = t_beam + fill_end.at(i) - fill_start.at(i); 
 
   // loop over data files
-  for(int ls=1; ls<=3800; ls++) 
+  for(int ls=1; ls<=4600; ls++) 
   { 
-    ifstream fin(Form("data/data_%i.dat",ls));
+    ifstream fin(Form("../data/data_%i.dat",ls));
     string line;  
     // salvage screwed Pi timing in ls 1870
     int round = 0;
@@ -132,8 +133,36 @@ void hodoAnalysis()
           //cout << line << endl;  
           int bin = (int)(time/3600);
           h1->SetBinContent(bin,h1->GetBinContent(bin)+1); 
-            
+          
+          int get_fill_number=-1;
+          int get_fill_start=-1;
+          for(int i=0; i<fill_number.size(); i++)
+          { 
+            if(time>fill_start.at(i) && time<=fill_end.at(i))  
+            { 
+              get_fill_number=fill_number.at(i);
+              get_fill_start=fill_start.at(i);
+            }
+          }  
 
+          if((
+             get_fill_number==6323 || 
+             get_fill_number==6317 || 
+             get_fill_number==6315 || 
+             get_fill_number==6314 || 
+             get_fill_number==6312 || 
+             get_fill_number==6311 || 
+             get_fill_number==6308 || 
+             get_fill_number==6305 || 
+             get_fill_number==6304 || 
+             get_fill_number==6303 || 
+             get_fill_number==6298 || 
+             get_fill_number==6297) && 
+             get_fill_number!=-1) 
+          {
+            //cout << get_fill_number << " :: " << time << " - " << get_fill_start << " = " << (time-get_fill_start)/3600 << endl;
+            h1level->Fill((time-get_fill_start)/3600); 
+          }
           // fill occ per fill  
           bool isCollisions=false;
           for(int i=0; i<fill_number.size(); i++) 
@@ -146,16 +175,20 @@ void hodoAnalysis()
             }
           }
 
-          // consider XeXe period as beam on 
-          if(time>1855572 && time<1587792) isCollisions=true; 
+          // Consider XeXe beam on:  fill 6295 (6:30hours)  2017.10.12 20:21:25 - 2017.10.13 02:51:01 
+          // 2017.10.12 20:21:25 UTC = 2017.10.12 22:21:25 CERN = 1745461   
+          // 2017.10.13 02:51:01 UTC = 2017.10.13 04:51:01 CERN = 1722085
+          if(time>1722085 && time<1745461) isCollisions=true; 
 
           if(isCollisions==false) Nocc_nobeam++; 
         } 
       }
     }
   }
-
-  cout << 2096940-(t_beam+1855572-1587792) << " "  << Nocc_nobeam  << endl; // 2096940 from 9/23 1:41 to 10/17 8:10
+    
+  // 2615340 from 9/23 1:41 to 10/23 8:10 
+//  cout << 2615340-(t_beam+1855572-1587792) << " "  << Nocc_nobeam  << " = " << Nocc_nobeam/(2615340-(t_beam+1855572-1587792)) <<  endl; 
+  cout << 2615340-(t_beam+1745461-1722085) << " "  << Nocc_nobeam  << " = " << Nocc_nobeam/(2615340-(t_beam+1745461-1722085)) <<  endl; 
 
   for(int i=0; i<fill_number.size(); i++)  
   { 
@@ -173,33 +206,56 @@ void hodoAnalysis()
   // Set label 
   // 9/23 00:00 is bin 1 
   // one bin is one hour
-  int days = 720/24; 
+  int days = 840/24; 
   for(int i=0; i<days; i++)
   { 
-    if(i%2!=0) continue;
+    if(i%3!=0) continue;
     if((i+23)<=30)  h1->GetXaxis()->SetBinLabel(24*i+1, Form("9/%d",i+23)); 
     else  h1->GetXaxis()->SetBinLabel(24*i+1, Form("10/%d",i+23-30)); 
   } 
   
   //
-  TCanvas *c = new TCanvas("c","c",800,300);
+  TCanvas *c = new TCanvas("c","c",1200,300);
   c->cd(1);
   c->SetRightMargin(0.03);
   c->SetLeftMargin(0.075);
   h1->Rebin(1);
+  for(int i=1; i<=840; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.00049*3600); // 444./908858 = 0.000488525
   h1->SetTitle("Number of events with at least one hit in each end");
   h1->LabelsOption("h","X");
   h1->SetStats(0); 
   h1->SetLabelSize(0.05,"Y");
   h1->SetLabelSize(0.10,"X");
   h1->SetMaximum(h1->GetMaximum()*1.2);
+  h1->SetMinimum(-2.);
   h1->GetYaxis()->SetTitle("Rate [/hour]");
   h1->GetYaxis()->SetTitleSize(0.05);
   h1->GetYaxis()->SetTitleOffset(0.5);
   h1->Draw("hist");
   c->Print("occ.pdf");
-  c->Print("occ.C");
   
+  //
+  TCanvas *clevel = new TCanvas("clevel","clevel",400,300);
+  clevel->cd(1);
+  //clevel->SetRightMargin(0.03);
+  //clevel->SetLeftMargin(0.075);
+  for(int i=1; i<=10; i++) h1level->SetBinContent(i, h1level->GetBinContent(i)-0.00049*3600*12); // 444./908858 = 0.000488525
+  h1level->Scale(1./12.);
+  h1level->SetTitle("Number of events with at least one hit in each end");
+  h1level->LabelsOption("h","X");
+  h1level->SetStats(0); 
+  h1level->SetLabelSize(0.05,"Y");
+  h1level->SetLabelSize(0.05,"X");
+  h1level->SetMaximum(h1level->GetMaximum()*1.2);
+  h1level->SetMinimum(0);
+  h1level->GetYaxis()->SetTitle("Rate [/hour]");
+  h1level->GetYaxis()->SetTitleSize(0.05);
+  h1level->GetYaxis()->SetTitleOffset(0.5);
+  h1level->Draw("e");
+  clevel->Print("lumilevel.pdf");
+ 
+
+
   //
   Float_t lumi_gr[number_of_fills];
   Float_t lumi_bril_gr[number_of_fills];
@@ -212,14 +268,17 @@ void hodoAnalysis()
     lumi_bril_error_gr[i]=lumi_bril_gr[i]*0.05; 
     Nocc_error[i]=TMath::Sqrt(Nocc[i]); 
    }
-  for(int i=0; i<number_of_fills; i++) 
-    cout << i << " " << lumi_bril_gr[i] << " +/- " << lumi_bril_error_gr[i] 
-              << " " << Nocc[i] << " +/- " << Nocc_error[i] << endl;  
   
   // Subtract non-beam contribution 
   for(int i=0; i<number_of_fills; i++) 
-          Nocc[i] = Nocc[i] - (fill_end.at(i)-fill_start.at(i))*0.00047; // 370/784916=0.00047 
-
+          Nocc[i] = Nocc[i] - (fill_end.at(i)-fill_start.at(i))*0.00049; // 
+  
+  for(int i=0; i<number_of_fills; i++) 
+    cout << i << " :: "  
+              << Form("%.1f +/- %.1f ", lumi_bril_gr[i], lumi_bril_error_gr[i]) 
+              << " \t \t " 
+              << Form("%1.f +/- %.1f ", Nocc[i], Nocc_error[i]) << endl;  
+  
   TCanvas *c2d = new TCanvas("c2d","c2d",400,300); 
   c2d->cd(1);
   TGraph *gr = new TGraphAsymmErrors(number_of_fills,
@@ -229,7 +288,8 @@ void hodoAnalysis()
   TGraph *gr_bril = new TGraphAsymmErrors(number_of_fills,
                                      lumi_bril_gr, Nocc, 
                                      lumi_bril_error_gr, lumi_bril_error_gr, 
-                                     Nocc_error, Nocc_error); 
+                                     Nocc_error, Nocc_error);  
+  
   gr->SetMarkerStyle(20);
   gr->SetMarkerSize(0.5);
   gr_bril->SetMarkerStyle(20);
@@ -237,8 +297,11 @@ void hodoAnalysis()
   gr_bril->SetMarkerColor(kBlack);
   gr_bril->SetLineColor(kBlack);
   gr_bril->SetLineWidth(2);
-  //gr->Draw("AP");
-  gr_bril->Draw("AP"); 
+  gr_bril->Draw("AP same"); 
+  gr_bril->GetYaxis()->SetRangeUser(-20.,150.);
+  gr_bril->GetXaxis()->SetLimits(-20.,700.); 
+  gr_bril->Draw("AP same"); 
+  c2d->Update();
   gr_bril->Fit("pol1");  
   gr_bril->GetFunction("pol1")->SetLineColorAlpha(kBlue,0.5);
   gr_bril->GetFunction("pol1")->SetLineWidth(5); 
