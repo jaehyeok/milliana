@@ -17,8 +17,11 @@ int charToInt(char c)
 //
 void hodoAnalysis()
 {  
-  TH1D *h1 = new TH1D("h1","h1",840,0.5,840.5);
-  TH1D *h1level = new TH1D("h1level","h1level",10,0,10);
+  TH1D *h1 = new TH1D("h1","h1",1080,0.5,1080.5);
+  TH1D *h1level = new TH1D("h1level","h1level",15,0,15);
+  TH1D *h1levelnorm = new TH1D("h1levelnorm","h1levelnorm",15,0,15);
+  TH1D *h1nolevel = new TH1D("h1nolevel","h1nolevel",15,0,15);
+  TH1D *h1nolevelnorm = new TH1D("h1nolevelnorm","h1nolevelnorm",15,0,15);
 
   // Get fill, time, lumi  
   vector<int> fill_number;
@@ -66,14 +69,32 @@ void hodoAnalysis()
   const Int_t number_of_fills = fill_number.size();
   Float_t Nocc[number_of_fills]; 
   for(int i=0; i<number_of_fills; i++) Nocc[i]=0; 
-  
+ 
+  // Get normalization for lumilevel plot 
+  for(int i=0; i<number_of_fills; i++) 
+  {
+    int fill_duration = (fill_end.at(i)-fill_start.at(i))/3600; 
+    if(fill_duration<1) continue;
+    if(fill_number.at(i)<6297) 
+    {
+      for(int ibin=1; ibin<=fill_duration; ibin++) 
+        h1nolevelnorm->SetBinContent(ibin, h1nolevelnorm->GetBinContent(ibin)+1);  
+    }
+    else
+    {
+      for(int ibin=1; ibin<=fill_duration; ibin++) 
+        h1levelnorm->SetBinContent(ibin, h1levelnorm->GetBinContent(ibin)+1);  
+    }
+  }
+
   // get no beam time
   Int_t Nocc_nobeam=0;    
+  Int_t Nocc_beam=0;    
   Int_t t_beam=0;
   for(int i=0; i<number_of_fills; i++) t_beam = t_beam + fill_end.at(i) - fill_start.at(i); 
 
   // loop over data files
-  for(int ls=1; ls<=4600; ls++) 
+  for(int ls=1; ls<=7000; ls++) 
   { 
     ifstream fin(Form("../data/data_%i.dat",ls));
     string line;  
@@ -104,7 +125,8 @@ void hodoAnalysis()
         // time = 0 is 9/23 00:00:00
         // epoch time is 1506124800 taken from https://www.epochconverter.com
         int time = hour*60*60 + 60*minute + second;  
-        if(month==10) time = time + (day+7)*24*60*60; 
+        if(month==11) time = time + (day+7+31)*24*60*60; 
+        else if(month==10) time = time + (day+7)*24*60*60; 
         else if(month==9) time = time + (day-23)*24*60*60; 
 
         // for ls 1870
@@ -130,38 +152,42 @@ void hodoAnalysis()
         if((botv || both) && (topv || toph))    
         //if(botv && both && topv && toph)    
         {
-          //cout << line << endl;  
+          if(ls==1870)
+          {  
+            //2017: 9:23:14:39:34:504889  0 0000 00000000 00010001 00010001 00000000 00000000
+            //0123456789012345678901234567890123456789012345678901234567890123456789012345678 
+            //0         1         2         3         4         5         6         7 
+            cout << line<< endl;  // FIXME I am here
+          }
+          else 
+          {
+            cout << line << endl;  
+          }
           int bin = (int)(time/3600);
           h1->SetBinContent(bin,h1->GetBinContent(bin)+1); 
           
           int get_fill_number=-1;
           int get_fill_start=-1;
+          int get_fill_end=-1;
           for(int i=0; i<fill_number.size(); i++)
           { 
             if(time>fill_start.at(i) && time<=fill_end.at(i))  
             { 
               get_fill_number=fill_number.at(i);
               get_fill_start=fill_start.at(i);
+              get_fill_end=fill_end.at(i);
             }
           }  
-
-          if((
-             get_fill_number==6323 || 
-             get_fill_number==6317 || 
-             get_fill_number==6315 || 
-             get_fill_number==6314 || 
-             get_fill_number==6312 || 
-             get_fill_number==6311 || 
-             get_fill_number==6308 || 
-             get_fill_number==6305 || 
-             get_fill_number==6304 || 
-             get_fill_number==6303 || 
-             get_fill_number==6298 || 
-             get_fill_number==6297) && 
-             get_fill_number!=-1) 
+          int fill_duration = (get_fill_end-get_fill_start)/3600;
+          if(get_fill_number>=6297 && fill_duration>1) 
           {
-            //cout << get_fill_number << " :: " << time << " - " << get_fill_start << " = " << (time-get_fill_start)/3600 << endl;
+            if(0) cout << get_fill_number << " :: " << time << " - " << get_fill_start << " = " << (time-get_fill_start)/3600 << endl;
             h1level->Fill((time-get_fill_start)/3600); 
+          }
+          else if(get_fill_number<6297 && fill_duration>1) 
+          {
+            if(0) cout << get_fill_number << " :: " << time << " - " << get_fill_start << " = " << (time-get_fill_start)/3600 << endl;
+            h1nolevel->Fill((time-get_fill_start)/3600); 
           }
           // fill occ per fill  
           bool isCollisions=false;
@@ -181,6 +207,7 @@ void hodoAnalysis()
           if(time>1722085 && time<1745461) isCollisions=true; 
 
           if(isCollisions==false) Nocc_nobeam++; 
+          if(isCollisions==true && (time<1722085 || time>1745461)) Nocc_beam++; 
         } 
       }
     }
@@ -189,7 +216,7 @@ void hodoAnalysis()
   // 2615340 from 9/23 1:41 to 10/23 8:10 
 //  cout << 2615340-(t_beam+1855572-1587792) << " "  << Nocc_nobeam  << " = " << Nocc_nobeam/(2615340-(t_beam+1855572-1587792)) <<  endl; 
   cout << 2615340-(t_beam+1745461-1722085) << " "  << Nocc_nobeam  << " = " << Nocc_nobeam/(2615340-(t_beam+1745461-1722085)) <<  endl; 
-
+  cout << t_beam << " " << Nocc_beam << " = "  << Nocc_beam/t_beam << " " << Nocc_beam/t_beam*3600 << endl;
   for(int i=0; i<fill_number.size(); i++)  
   { 
      cout << fill_number.at(i) << "  " << fill_lumi.at(i) << "\t" << "  " 
@@ -206,12 +233,13 @@ void hodoAnalysis()
   // Set label 
   // 9/23 00:00 is bin 1 
   // one bin is one hour
-  int days = 840/24; 
+  int days = 1080/24; 
   for(int i=0; i<days; i++)
   { 
     if(i%3!=0) continue;
     if((i+23)<=30)  h1->GetXaxis()->SetBinLabel(24*i+1, Form("9/%d",i+23)); 
-    else  h1->GetXaxis()->SetBinLabel(24*i+1, Form("10/%d",i+23-30)); 
+    else if((i+23)<=30+31)  h1->GetXaxis()->SetBinLabel(24*i+1, Form("10/%d",i+23-30)); 
+    else  h1->GetXaxis()->SetBinLabel(24*i+1, Form("11/%d",i+23-30-31)); 
   } 
   
   //
@@ -220,7 +248,8 @@ void hodoAnalysis()
   c->SetRightMargin(0.03);
   c->SetLeftMargin(0.075);
   h1->Rebin(1);
-  for(int i=1; i<=840; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.00049*3600); // 444./908858 = 0.000488525
+  for(int i=1; i<=912; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.00049*3600); // 444./908858 = 0.000488525
+  //for(int i=1; i<=912; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.0000*3600); // 444./908858 = 0.000488525
   h1->SetTitle("Number of events with at least one hit in each end");
   h1->LabelsOption("h","X");
   h1->SetStats(0); 
@@ -238,9 +267,16 @@ void hodoAnalysis()
   TCanvas *clevel = new TCanvas("clevel","clevel",400,300);
   clevel->cd(1);
   //clevel->SetRightMargin(0.03);
-  //clevel->SetLeftMargin(0.075);
-  for(int i=1; i<=10; i++) h1level->SetBinContent(i, h1level->GetBinContent(i)-0.00049*3600*12); // 444./908858 = 0.000488525
-  h1level->Scale(1./12.);
+  //clevel->SetLeftMargin(0.075); 
+  clevel->cd(1)->SetGrid();
+  for(int i=1; i<=15; i++) 
+  {
+    cout << i << " " << h1level->GetBinContent(i)  <<  " +- " << h1level->GetBinError(i) << "/" << h1levelnorm->GetBinContent(i) << endl;
+    h1level->SetBinError(i, h1level->GetBinError(i)/h1levelnorm->GetBinContent(i)); 
+    h1level->SetBinContent(i, h1level->GetBinContent(i)/h1levelnorm->GetBinContent(i)-0.00049*3600); // 444./908858 = 0.000488525 
+    h1nolevel->SetBinError(i, h1nolevel->GetBinError(i)/h1nolevelnorm->GetBinContent(i)); 
+    h1nolevel->SetBinContent(i, h1nolevel->GetBinContent(i)/h1nolevelnorm->GetBinContent(i)-0.00049*3600); // 444./908858 = 0.000488525 
+  }   
   h1level->SetTitle("Number of events with at least one hit in each end");
   h1level->LabelsOption("h","X");
   h1level->SetStats(0); 
@@ -250,12 +286,25 @@ void hodoAnalysis()
   h1level->SetMinimum(0);
   h1level->GetYaxis()->SetTitle("Rate [/hour]");
   h1level->GetYaxis()->SetTitleSize(0.05);
-  h1level->GetYaxis()->SetTitleOffset(0.5);
-  h1level->Draw("e");
+  h1level->GetYaxis()->SetTitleOffset(1); 
+  h1level->GetXaxis()->SetTitle("hours");
+  h1level->GetXaxis()->SetTitleSize(0.05);
+  h1level->SetMarkerStyle(20);
+  h1level->SetMarkerColor(kBlack);
+  h1level->SetLineColor(kBlack);
+  h1level->SetLineWidth(2);
+  h1level->Draw("ep");
+  TF1 *f_expo = new TF1("f_expo","expo",3,15);
+  h1level->Fit("f_expo","R");
+  TF1 *f_flat = new TF1("f_flat","pol0",0,3);
+  h1level->Fit("f_flat","R+");
+  h1nolevel->SetMarkerStyle(20);
+  h1nolevel->SetMarkerColor(kBlue);
+  h1nolevel->SetLineColor(kBlue);
+  h1nolevel->SetLineWidth(2);
+  h1nolevel->Draw("ep same");
   clevel->Print("lumilevel.pdf");
  
-
-
   //
   Float_t lumi_gr[number_of_fills];
   Float_t lumi_bril_gr[number_of_fills];
@@ -272,13 +321,17 @@ void hodoAnalysis()
   // Subtract non-beam contribution 
   for(int i=0; i<number_of_fills; i++) 
           Nocc[i] = Nocc[i] - (fill_end.at(i)-fill_start.at(i))*0.00049; // 
-  
-  for(int i=0; i<number_of_fills; i++) 
-    cout << i << " :: "  
-              << Form("%.1f +/- %.1f ", lumi_bril_gr[i], lumi_bril_error_gr[i]) 
-              << " \t \t " 
-              << Form("%1.f +/- %.1f ", Nocc[i], Nocc_error[i]) << endl;  
-  
+  if(0)
+  {
+    for(int i=0; i<number_of_fills; i++) 
+      cout << fill_number.at(i) << " :: "  
+                << Form("%.1f +/- %.1f ", lumi_bril_gr[i], lumi_bril_error_gr[i]) 
+                << " \t " 
+                << Form("%1.f ", Nocc[i] + (fill_end.at(i)-fill_start.at(i))*0.00049)   
+                << " \t " 
+                << Form("%1.f +/- %.1f ", Nocc[i], Nocc_error[i]) << endl;  
+  }
+
   TCanvas *c2d = new TCanvas("c2d","c2d",400,300); 
   c2d->cd(1);
   TGraph *gr = new TGraphAsymmErrors(number_of_fills,
