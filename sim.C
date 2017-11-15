@@ -5,12 +5,13 @@ void sim()
   TH1D *h1_mc_occ = new TH1D("h1_mc_occ", "h1_mc_occ", 13, -0.5, 12.5);
   TH1D *h1_mc_occ_layer = new TH1D("h1_mc_occ_layer", "h1_mc_occ_layer", 4, -0.5, 3.5);
   TH1D *h1_mc_occ_cate = new TH1D("h1_mc_occ_cate", "h1_mc_occ_cate", 8, -0.5, 7.5);
+  TH2D *h2_mc_cate_pt = new TH2D("h2_mc_cate_pt", "h2_mc_cate_pt", 8, -0.5, 7.5, 20, 0, 50);
   
   TH1D *h1_data_occ = new TH1D("h1_data_occ", "h1_data_occ", 13, -0.5, 12.5);
   TH1D *h1_data_occ_layer = new TH1D("h1_data_occ_layer", "h1_data_occ_layer", 4, -0.5, 3.5);
   TH1D *h1_data_occ_cate = new TH1D("h1_data_occ_cate", "h1_data_occ_cate", 8, -0.5, 7.5);
 
-  ifstream fin_mc("detectorHits.txt");
+  ifstream fin_mc("data/hits_withSideHits.txt");
   string line_mc;  
   if(fin_mc.is_open()) {
     while(fin_mc.good()){
@@ -21,6 +22,7 @@ void sim()
       if(line_mc.find("#")!=string::npos ) continue;
       // charge mass x y z (m) px py pz (MeV) x y z (m) px py pz (MeV) */*/*/*/* 
       // -1.0  105.0 33.0  -0.0377483330201  0.0340244299481 9196.10094566 -103.637254361  -6.0012614516 34.6627646749 -0.0551225667417  0.034966843793  8804.41796055 -91.1804012686  15.7343997837 2/-1/6 
+     // -1.0	105.0	33.0140700394	-0.0182195248556	0.0415869806007	8357.68372716	-93.4326067188	2.0054470523	36.2064428616	-0.0418233559651	0.0374667958614	7613.35744269	-43.9701964041	-24.3069312816	2/-1/6/-1/10/-1
 
       float q, m; 
       float ix,iy,iz;
@@ -80,21 +82,21 @@ void sim()
       int occ_layer2 = hit[4]+hit[5]+hit[6]+hit[7];
       int occ_layer3 = hit[8]+hit[9]+hit[10]+hit[11];
       h1_mc_occ_layer->Fill((occ_layer1>0)+(occ_layer2>0)+(occ_layer3>0));
-     
-      if(occ_layer1==0 && occ_layer2==0 && occ_layer3==0) h1_mc_occ_cate->Fill(0); 
-      if(occ_layer1>0  && occ_layer2==0 && occ_layer3==0) h1_mc_occ_cate->Fill(1); 
-      if(occ_layer1==0 && occ_layer2>0  && occ_layer3==0) h1_mc_occ_cate->Fill(2); 
-      if(occ_layer1==0 && occ_layer2==0 && occ_layer3>0 ) h1_mc_occ_cate->Fill(3); 
-      if(occ_layer1>0  && occ_layer2>0  && occ_layer3==0) h1_mc_occ_cate->Fill(4); 
-      if(occ_layer1>0  && occ_layer2==0 && occ_layer3>0 ) h1_mc_occ_cate->Fill(5); 
-      if(occ_layer1==0 && occ_layer2>0  && occ_layer3>0 ) h1_mc_occ_cate->Fill(6); 
-      if(occ_layer1>0  && occ_layer2>0  && occ_layer3>0 ) h1_mc_occ_cate->Fill(7); 
+    
+      if(occ_layer1==0 && occ_layer2==0 && occ_layer3==0) { h1_mc_occ_cate->Fill(0); h2_mc_cate_pt->Fill(0., ipx/1000); }
+      if(occ_layer1>0  && occ_layer2==0 && occ_layer3==0) { h1_mc_occ_cate->Fill(1); h2_mc_cate_pt->Fill(1., ipx/1000); }
+      if(occ_layer1==0 && occ_layer2>0  && occ_layer3==0) { h1_mc_occ_cate->Fill(2); h2_mc_cate_pt->Fill(2., ipx/1000); }
+      if(occ_layer1==0 && occ_layer2==0 && occ_layer3>0 ) { h1_mc_occ_cate->Fill(3); h2_mc_cate_pt->Fill(3., ipx/1000); }
+      if(occ_layer1>0  && occ_layer2>0  && occ_layer3==0) { h1_mc_occ_cate->Fill(4); h2_mc_cate_pt->Fill(4., ipx/1000); }
+      if(occ_layer1>0  && occ_layer2==0 && occ_layer3>0 ) { h1_mc_occ_cate->Fill(5); h2_mc_cate_pt->Fill(5., ipx/1000); }
+      if(occ_layer1==0 && occ_layer2>0  && occ_layer3>0 ) { h1_mc_occ_cate->Fill(6); h2_mc_cate_pt->Fill(6., ipx/1000); }
+      if(occ_layer1>0  && occ_layer2>0  && occ_layer3>0 ) { h1_mc_occ_cate->Fill(7); h2_mc_cate_pt->Fill(7., ipx/1000); }
 
       // look at only triple coincidence events in order to compare with data
-      if(occ_layer1>0  && occ_layer2>0  && occ_layer3>0 ) 
-      { 
+      //if(occ_layer1>0  && occ_layer2>0  && occ_layer3>0 ) 
+      //{ 
         // occ per layer : 2D of layer vs ch  (3x4)
-      } 
+      //} 
 
       if(0)
       {
@@ -114,6 +116,7 @@ void sim()
   }
   fin_mc.close();
 
+/*
   // 
   // Data
   //
@@ -179,26 +182,36 @@ void sim()
     }
   }
   fin_data.close();
-
+*/
 
 
   TCanvas *c = new TCanvas("c","c",1200,900);
   c->Divide(4,3); 
   c->cd(1);
   c->cd(1)->SetLogy(1);
-  h1_data_occ->SetMinimum(1);  
-  h1_data_occ->DrawNormalized("hist");  
-  h1_mc_occ->DrawNormalized("ep same");  
+  //h1_data_occ->SetMinimum(1);  
+  //h1_data_occ->DrawNormalized("hist");  
+  //h1_mc_occ->DrawNormalized("ep same");  
+  h1_mc_occ->SetMinimum(1);  
+  h1_mc_occ->DrawNormalized("ep");  
   c->cd(2);
   c->cd(2)->SetLogy(1);
-  h1_data_occ_layer->SetMinimum(1);  
-  h1_data_occ_layer->DrawNormalized("hist");  
-  h1_mc_occ_layer->DrawNormalized("ep same");  
+  //h1_data_occ_layer->SetMinimum(1);  
+  //h1_data_occ_layer->DrawNormalized("hist");  
+  //h1_mc_occ_layer->DrawNormalized("ep same");  
+  h1_mc_occ_layer->SetMinimum(1);  
+  h1_mc_occ_layer->DrawNormalized("ep");  
   c->cd(3);
   c->cd(3)->SetLogy(1);
-  h1_data_occ_cate->SetMinimum(1);  
-  h1_data_occ_cate->DrawNormalized("hist");  
-  h1_mc_occ_cate->DrawNormalized("ep same");  
-  
+  //h1_data_occ_cate->SetMinimum(1);  
+  //h1_data_occ_cate->DrawNormalized("hist");  
+  //h1_mc_occ_cate->DrawNormalized("ep same");  
+  h1_mc_occ_cate->SetMinimum(1);  
+  h1_mc_occ_cate->DrawNormalized("ep");  
+  c->cd(4);
+  c->cd(4)->SetLogz(1);
+  h2_mc_cate_pt->Draw("colz text"); 
+
+
   c->Print("sim.pdf");
 }
