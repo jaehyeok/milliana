@@ -5,10 +5,13 @@ void sim()
   TH1D *h1_mc_occ = new TH1D("h1_mc_occ", "h1_mc_occ", 13, -0.5, 12.5);
   TH1D *h1_mc_occ_layer = new TH1D("h1_mc_occ_layer", "h1_mc_occ_layer", 4, -0.5, 3.5);
   TH1D *h1_mc_occ_cate = new TH1D("h1_mc_occ_cate", "h1_mc_occ_cate", 8, -0.5, 7.5);
+  TH2D *h2_mc_occ_cate = new TH2D("h2_mc_occ_cate", "h2_mc_occ_cate", 3, 0.5, 3.5, 4, 0.5, 4.5);
   
   TH1D *h1_data_occ = new TH1D("h1_data_occ", "h1_data_occ", 13, -0.5, 12.5);
   TH1D *h1_data_occ_layer = new TH1D("h1_data_occ_layer", "h1_data_occ_layer", 4, -0.5, 3.5);
   TH1D *h1_data_occ_cate = new TH1D("h1_data_occ_cate", "h1_data_occ_cate", 8, -0.5, 7.5);
+  TH2D *h2_data_occ_cate = new TH2D("h2_data_occ_cate", "h2_data_occ_cate", 3, 0.5, 3.5, 4, 0.5, 4.5);
+  
 
   ifstream fin_mc("detectorHits.txt");
   string line_mc;  
@@ -93,7 +96,10 @@ void sim()
       // look at only triple coincidence events in order to compare with data
       if(occ_layer1>0  && occ_layer2>0  && occ_layer3>0 ) 
       { 
-        // occ per layer : 2D of layer vs ch  (3x4)
+        // occ per layer : 2D of layer vs ch  (3x4)  
+        h2_mc_occ_cate->Fill(1, occ_layer1);
+        h2_mc_occ_cate->Fill(2, occ_layer2);
+        h2_mc_occ_cate->Fill(3, occ_layer3);
       } 
 
       if(0)
@@ -164,6 +170,15 @@ void sim()
       if(occ_layer1>0  && occ_layer2==0 && occ_layer3>0 ) h1_data_occ_cate->Fill(5); 
       if(occ_layer1==0 && occ_layer2>0  && occ_layer3>0 ) h1_data_occ_cate->Fill(6); 
       if(occ_layer1>0  && occ_layer2>0  && occ_layer3>0 ) h1_data_occ_cate->Fill(7); 
+      
+      // look at only triple coincidence events in order to compare with data
+      if(occ_layer1>0  && occ_layer2>0  && occ_layer3>0 ) 
+      { 
+        // occ per layer : 2D of layer vs ch  (3x4)  
+        h2_data_occ_cate->Fill(1, occ_layer1);
+        h2_data_occ_cate->Fill(2, occ_layer2);
+        h2_data_occ_cate->Fill(3, occ_layer3);
+      } 
 
       if(0)
       {
@@ -180,25 +195,45 @@ void sim()
   }
   fin_data.close();
 
-
-
+  //
   TCanvas *c = new TCanvas("c","c",1200,900);
   c->Divide(4,3); 
   c->cd(1);
   c->cd(1)->SetLogy(1);
+  h1_data_occ->SetLineColor(kBlack);  
+  h1_data_occ->SetLineWidth(2);  
+  h1_mc_occ->SetLineColor(kRed);  
+  h1_mc_occ->SetLineWidth(2);  
   h1_data_occ->SetMinimum(1);  
   h1_data_occ->DrawNormalized("hist");  
-  h1_mc_occ->DrawNormalized("ep same");  
+  h1_mc_occ->DrawNormalized("hist same");  
   c->cd(2);
   c->cd(2)->SetLogy(1);
+  h1_data_occ_layer->SetLineColor(kBlack);  
+  h1_data_occ_layer->SetLineWidth(2);  
+  h1_mc_occ_layer->SetLineColor(kRed);  
+  h1_mc_occ_layer->SetLineWidth(2);  
   h1_data_occ_layer->SetMinimum(1);  
   h1_data_occ_layer->DrawNormalized("hist");  
-  h1_mc_occ_layer->DrawNormalized("ep same");  
+  h1_mc_occ_layer->DrawNormalized("hist same");  
   c->cd(3);
   c->cd(3)->SetLogy(1);
+  h1_data_occ_cate->SetLineColor(kBlack);  
+  h1_data_occ_cate->SetLineWidth(2);  
+  h1_mc_occ_cate->SetLineColor(kRed);  
+  h1_mc_occ_cate->SetLineWidth(2);  
   h1_data_occ_cate->SetMinimum(1);  
   h1_data_occ_cate->DrawNormalized("hist");  
-  h1_mc_occ_cate->DrawNormalized("ep same");  
+  h1_mc_occ_cate->DrawNormalized("hist same");  
+  c->cd(4);
+  c->cd(4)->SetLogz(1); 
+  h2_mc_occ_cate->SetMarkerSize(2);
+  h2_mc_occ_cate->Draw("colz text");
+  c->cd(5);
+  c->cd(5)->SetLogz(1); 
+  h2_data_occ_cate->SetMarkerSize(2);
+  h2_data_occ_cate->Draw("colz text");
   
   c->Print("sim.pdf");
+
 }

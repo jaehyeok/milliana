@@ -14,10 +14,21 @@ int charToInt(char c)
   else return -1;
 } 
 
+TString convertTimeToDate(int time)
+{ 
+  d = time/86400;
+  h = time/3600 - d*24;
+  m = time/60 - (d*24+h)*60;
+  s = time%60; 
+  TString date = Form("2017:10:%2d:%2d:%2d:%2d",d-7,h,m,s);
+  return date;
+}
+
+
 //
 void hodoAnalysis()
 {  
-  TH1D *h1 = new TH1D("h1","h1",1080,0.5,1080.5);
+  TH1D *h1 = new TH1D("h1","h1",1440,0.5,1440.5);
   TH1D *h1level = new TH1D("h1level","h1level",15,0,15);
   TH1D *h1levelnorm = new TH1D("h1levelnorm","h1levelnorm",15,0,15);
   TH1D *h1nolevel = new TH1D("h1nolevel","h1nolevel",15,0,15);
@@ -94,8 +105,10 @@ void hodoAnalysis()
   for(int i=0; i<number_of_fills; i++) t_beam = t_beam + fill_end.at(i) - fill_start.at(i); 
 
   // loop over data files
-  for(int ls=1; ls<=7000; ls++) 
-  { 
+  //for(int ls=1; ls<=8600; ls++) 
+  for(int ls=1820; ls<=1875; ls++) 
+  {  
+
     ifstream fin(Form("../data/data_%i.dat",ls));
     string line;  
     // salvage screwed Pi timing in ls 1870
@@ -130,12 +143,12 @@ void hodoAnalysis()
         else if(month==9) time = time + (day-23)*24*60*60; 
 
         // for ls 1870
-        if(ls==1870)  
+        if(ls==1870 && day==3)  
         {
             time_before = time_now; 
             time_now = time; 
             if(time_now < 864600 && time_before>886500) round++; 
-            time = time + round*(6*60*60+25*60+1);
+            time = time + round*(6*60*60+25*60+2.2);
         }
         //cout << month << ":" << day << ":" << hour << ":" << minute << ":" << second << " = " << time << " " << (int)(time/3600) << endl; 
         //if(time_now < 864600 && time_before>886500) cout << " round " << round << " " << time << endl; // FIXME  
@@ -148,21 +161,26 @@ void hodoAnalysis()
         for(int ibot=53; ibot<=60; ibot++) if(line[ibot]=='1') both = true;
         for(int itop=62; itop<=69; itop++) if(line[itop]=='1') toph = true;
         for(int itop=71; itop<=78; itop++) if(line[itop]=='1') topv = true;
-        //if(botv || both)    
         if((botv || both) && (topv || toph))    
         //if(botv && both && topv && toph)    
+        //if(time>1383000)    
         {
+
           if(ls==1870)
           {  
             //2017: 9:23:14:39:34:504889  0 0000 00000000 00010001 00010001 00000000 00000000
             //0123456789012345678901234567890123456789012345678901234567890123456789012345678 
             //0         1         2         3         4         5         6         7 
-            cout << line<< endl;  // FIXME I am here
+            //cout << line << endl;  // FIXME I am here 
+            cout << convertTimeToDate(time); 
+            for(int iline=19; iline<=78; iline++) cout <<line[iline];
+            cout << endl;
           }
           else 
           {
             cout << line << endl;  
           }
+ 
           int bin = (int)(time/3600);
           h1->SetBinContent(bin,h1->GetBinContent(bin)+1); 
           
@@ -233,7 +251,7 @@ void hodoAnalysis()
   // Set label 
   // 9/23 00:00 is bin 1 
   // one bin is one hour
-  int days = 1080/24; 
+  int days = 1440/24; 
   for(int i=0; i<days; i++)
   { 
     if(i%3!=0) continue;
@@ -248,7 +266,7 @@ void hodoAnalysis()
   c->SetRightMargin(0.03);
   c->SetLeftMargin(0.075);
   h1->Rebin(1);
-  for(int i=1; i<=912; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.00049*3600); // 444./908858 = 0.000488525
+  for(int i=1; i<=1440; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.00049*3600); // 444./908858 = 0.000488525
   //for(int i=1; i<=912; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.0000*3600); // 444./908858 = 0.000488525
   h1->SetTitle("Number of events with at least one hit in each end");
   h1->LabelsOption("h","X");
@@ -352,7 +370,7 @@ void hodoAnalysis()
   gr_bril->SetLineWidth(2);
   gr_bril->Draw("AP same"); 
   gr_bril->GetYaxis()->SetRangeUser(-20.,150.);
-  gr_bril->GetXaxis()->SetLimits(-20.,700.); 
+  gr_bril->GetXaxis()->SetLimits(-20.,900.); 
   gr_bril->Draw("AP same"); 
   c2d->Update();
   gr_bril->Fit("pol1");  
