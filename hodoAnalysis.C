@@ -16,11 +16,14 @@ int charToInt(char c)
 
 TString convertTimeToDate(int time)
 { 
-  d = time/86400;
-  h = time/3600 - d*24;
-  m = time/60 - (d*24+h)*60;
-  s = time%60; 
-  TString date = Form("2017:10:%2d:%2d:%2d:%2d",d-7,h,m,s);
+  int d = time/86400;
+  int h = time/3600 - d*24;
+  int m = time/60 - (d*24+h)*60;
+  int s = time%60; 
+  int mo = 9; 
+  if(d>7) { mo = 10; d = d-7;}
+  if(d>31) { mo = 11; d = d-31;}
+  TString date = Form("2017:%2d:%2d:%2d:%2d:%2d",mo,d,h,m,s);
   return date;
 }
 
@@ -28,7 +31,7 @@ TString convertTimeToDate(int time)
 //
 void hodoAnalysis()
 {  
-  TH1D *h1 = new TH1D("h1","h1",1440,0.5,1440.5);
+  TH1D *h1 = new TH1D("h1","h1",1488,0.5,1488.5);
   TH1D *h1level = new TH1D("h1level","h1level",15,0,15);
   TH1D *h1levelnorm = new TH1D("h1levelnorm","h1levelnorm",15,0,15);
   TH1D *h1nolevel = new TH1D("h1nolevel","h1nolevel",15,0,15);
@@ -105,9 +108,13 @@ void hodoAnalysis()
   for(int i=0; i<number_of_fills; i++) t_beam = t_beam + fill_end.at(i) - fill_start.at(i); 
 
   // loop over data files
-  //for(int ls=1; ls<=8600; ls++) 
-  for(int ls=1820; ls<=1875; ls++) 
+  for(int ls=1; ls<=9900; ls++) 
+  //for(int ls=1820; ls<=1875; ls++) 
+  //for(int ls=1875; ls<=9990; ls++) 
   {  
+
+    if(ls!=1870) continue; // FIXME
+    //if(ls<5361) continue; // FIXME 
 
     ifstream fin(Form("../data/data_%i.dat",ls));
     string line;  
@@ -231,10 +238,10 @@ void hodoAnalysis()
     }
   }
     
-  // 2615340 from 9/23 1:41 to 10/23 8:10 
-//  cout << 2615340-(t_beam+1855572-1587792) << " "  << Nocc_nobeam  << " = " << Nocc_nobeam/(2615340-(t_beam+1855572-1587792)) <<  endl; 
-  cout << 2615340-(t_beam+1745461-1722085) << " "  << Nocc_nobeam  << " = " << Nocc_nobeam/(2615340-(t_beam+1745461-1722085)) <<  endl; 
-  cout << t_beam << " " << Nocc_beam << " = "  << Nocc_beam/t_beam << " " << Nocc_beam/t_beam*3600 << endl;
+  //2615340 from 9/23 1:41 to 10/23 8:10 
+  //cout << 2615340-(t_beam+1855572-1587792) << " "  << Nocc_nobeam  << " = " << Nocc_nobeam/(2615340-(t_beam+1855572-1587792)) <<  endl; 
+  //cout << 2615340-(t_beam+1745461-1722085) << " "  << Nocc_nobeam  << " = " << Nocc_nobeam/(2615340-(t_beam+1745461-1722085)) <<  endl; 
+  //cout << t_beam << " " << Nocc_beam << " = "  << Nocc_beam/t_beam << " " << Nocc_beam/t_beam*3600 << endl;
   for(int i=0; i<fill_number.size(); i++)  
   { 
      cout << fill_number.at(i) << "  " << fill_lumi.at(i) << "\t" << "  " 
@@ -251,7 +258,7 @@ void hodoAnalysis()
   // Set label 
   // 9/23 00:00 is bin 1 
   // one bin is one hour
-  int days = 1440/24; 
+  int days = 1488/24; 
   for(int i=0; i<days; i++)
   { 
     if(i%3!=0) continue;
@@ -266,7 +273,7 @@ void hodoAnalysis()
   c->SetRightMargin(0.03);
   c->SetLeftMargin(0.075);
   h1->Rebin(1);
-  for(int i=1; i<=1440; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.00049*3600); // 444./908858 = 0.000488525
+  for(int i=1; i<=1488; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.00049*3600); // 444./908858 = 0.000488525
   //for(int i=1; i<=912; i++) h1->SetBinContent(i, h1->GetBinContent(i)-0.0000*3600); // 444./908858 = 0.000488525
   h1->SetTitle("Number of events with at least one hit in each end");
   h1->LabelsOption("h","X");
@@ -279,7 +286,7 @@ void hodoAnalysis()
   h1->GetYaxis()->SetTitleSize(0.05);
   h1->GetYaxis()->SetTitleOffset(0.5);
   h1->Draw("hist");
-  c->Print("occ.pdf");
+  c->Print("fig/occ.pdf");
   
   //
   TCanvas *clevel = new TCanvas("clevel","clevel",400,300);
@@ -321,7 +328,7 @@ void hodoAnalysis()
   h1nolevel->SetLineColor(kBlue);
   h1nolevel->SetLineWidth(2);
   h1nolevel->Draw("ep same");
-  clevel->Print("lumilevel.pdf");
+  clevel->Print("fig/lumilevel.pdf");
  
   //
   Float_t lumi_gr[number_of_fills];
@@ -377,8 +384,7 @@ void hodoAnalysis()
   gr_bril->GetFunction("pol1")->SetLineColorAlpha(kBlue,0.5);
   gr_bril->GetFunction("pol1")->SetLineWidth(5); 
   gr_bril->SetTitle(Form("chi2/ndf=%.1f/%i", gr_bril->GetFunction("pol1")->GetChisquare(),gr_bril->GetFunction("pol1")->GetNDF()));
-  c2d->Print("occ2d.pdf");
-  c2d->Print("occ2d.C");
+  c2d->Print("fig/occ2d.pdf");
 
   
 
