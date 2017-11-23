@@ -2,7 +2,7 @@ void sync_events()
 {   
   cout << "Syncing HS and MQ events"  << endl;
   TH1D *hdt = new TH1D("hdt","hdt", 40, -20, 20);
-  ifstream fin("data/mq/mq_nov20.txt");
+  ifstream fin("data/mq/mq_nov22.dat");
   string line;  
 
   if(fin.is_open()) {
@@ -35,12 +35,17 @@ void sync_events()
 
 
       // convert UTC to CERN time
-      if(h_<22) h_ = h_ + 2;  
-      if(h_>=22) { h_ = h_ - 22;  d_ = d_ + 1; }
+      //if(h_<22) h_ = h_ + 2;  
+      //if(h_>=22) { h_ = h_ - 22;  d_ = d_ + 1; }
       //cout << y_ << " " << mo_ << " " << d_ << " " << h_ << " " << mi_ << " " << s_ << endl;
 
       // --------------------------------------------------------------- //
-      ifstream finhodo("data/hs/hs_oct3.txt");
+      //ifstream finhodo("data/hs/hs_oct3.txt");
+      //ifstream finhodo("data/hs/hs_nov22.txt");
+      //ifstream finhodo("data/hs/hs_oct10.txt");
+      //ifstream finhodo("data/hs/hs_nooct3.txt");
+      //ifstream finhodo("data/hs/hs_afteroct29.txt");
+      ifstream finhodo("data/hs/hs_nov22_gmt.txt");
       string linehodo;  
       if(finhodo.is_open()) {
         while(finhodo.good()){ 
@@ -117,6 +122,6 @@ void sync_events()
   hdt->SetFillColor(kRed-3);
   hdt->SetStats(0);
   hdt->Draw("hist ep");
-  c->Print("dt.pdf");
+  c->Print("fig/dt.pdf");
 }
 

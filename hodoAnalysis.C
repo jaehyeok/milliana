@@ -20,9 +20,10 @@ TString convertTimeToDate(int time)
   int h = time/3600 - d*24;
   int m = time/60 - (d*24+h)*60;
   int s = time%60; 
-  int mo = 9; 
-  if(d>7) { mo = 10; d = d-7;}
-  if(d>31) { mo = 11; d = d-31;}
+  int mo = 9;
+  if(d>38) { mo = 11; d = d-38;}
+  else if(d>7) { mo = 10; d = d-7;}
+  else d = d + 23;
   TString date = Form("2017:%2d:%2d:%2d:%2d:%2d",mo,d,h,m,s);
   return date;
 }
@@ -70,8 +71,8 @@ void hodoAnalysis()
           stream >> lumi_bril;
         
           // epoch time is 1506124800 taken from https://www.epochconverter.com
-          t_start = t_start - 1506124800 + 3600*2;
-          t_end = t_end - 1506124800 + 3600*2; 
+          t_start = t_start - 1506124800;
+          t_end = t_end - 1506124800; 
           fill_number.push_back(fill);
           fill_start.push_back(t_start);
           fill_end.push_back(t_end);
@@ -113,7 +114,7 @@ void hodoAnalysis()
   //for(int ls=1875; ls<=9990; ls++) 
   {  
 
-    if(ls!=1870) continue; // FIXME
+    //if(ls!=1870) continue; // FIXME
     //if(ls<5361) continue; // FIXME 
 
     ifstream fin(Form("../data/data_%i.dat",ls));
@@ -143,7 +144,8 @@ void hodoAnalysis()
         int second  = 10*charToInt(line[17])+charToInt(line[18]); 
 
         // time = 0 is 9/23 00:00:00
-        // epoch time is 1506124800 taken from https://www.epochconverter.com
+        // epoch time is 1506124800 taken from https://www.epochconverter.com 
+        // this is CERN time
         int time = hour*60*60 + 60*minute + second;  
         if(month==11) time = time + (day+7+31)*24*60*60; 
         else if(month==10) time = time + (day+7)*24*60*60; 
@@ -160,6 +162,23 @@ void hodoAnalysis()
         //cout << month << ":" << day << ":" << hour << ":" << minute << ":" << second << " = " << time << " " << (int)(time/3600) << endl; 
         //if(time_now < 864600 && time_before>886500) cout << " round " << round << " " << time << endl; // FIXME  
 
+        // change to GMT
+        if(ls<5361)
+        {
+          time = time - 3600*2; // during summer time 
+        }
+        else if(ls==5361) 
+        { 
+          if(minute>30) time = time - 3600*2; // during summer time 
+          else time = time - 3600*1; // after summer time
+        }
+        else 
+        {
+          time = time - 3600; // after summer time 
+        }
+
+        if(time<0) continue; // remove the first two hours 
+
         bool botv = false; 
         bool both = false; 
         bool topv = false; 
@@ -172,22 +191,15 @@ void hodoAnalysis()
         //if(botv && both && topv && toph)    
         //if(time>1383000)    
         {
+          //2017: 9:23:14:39:34:504889  0 0000 00000000 00010001 00010001 00000000 00000000
+          //0123456789012345678901234567890123456789012345678901234567890123456789012345678 
+          //0         1         2         3         4         5         6         7 
+          //cout << line << endl;  // FIXME I am here 
+          cout << convertTimeToDate(time); 
+          for(int iline=19; iline<=78; iline++) cout <<line[iline];
+          cout << endl;
 
-          if(ls==1870)
-          {  
-            //2017: 9:23:14:39:34:504889  0 0000 00000000 00010001 00010001 00000000 00000000
-            //0123456789012345678901234567890123456789012345678901234567890123456789012345678 
-            //0         1         2         3         4         5         6         7 
-            //cout << line << endl;  // FIXME I am here 
-            cout << convertTimeToDate(time); 
-            for(int iline=19; iline<=78; iline++) cout <<line[iline];
-            cout << endl;
-          }
-          else 
-          {
-            cout << line << endl;  
-          }
- 
+          //
           int bin = (int)(time/3600);
           h1->SetBinContent(bin,h1->GetBinContent(bin)+1); 
           
@@ -229,10 +241,10 @@ void hodoAnalysis()
           // Consider XeXe beam on:  fill 6295 (6:30hours)  2017.10.12 20:21:25 - 2017.10.13 02:51:01 
           // 2017.10.12 20:21:25 UTC = 2017.10.12 22:21:25 CERN = 1745461   
           // 2017.10.13 02:51:01 UTC = 2017.10.13 04:51:01 CERN = 1722085
-          if(time>1722085 && time<1745461) isCollisions=true; 
+          if(time>1722085-3600*2 && time<1745461-3600*2) isCollisions=true; 
 
           if(isCollisions==false) Nocc_nobeam++; 
-          if(isCollisions==true && (time<1722085 || time>1745461)) Nocc_beam++; 
+          if(isCollisions==true && (time<1722085-3600*2 || time>1745461-3600*2)) Nocc_beam++; 
         } 
       }
     }
