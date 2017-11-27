@@ -88,20 +88,32 @@ void sync_events()
           //cout << "MilliQan : " << hour << ":" << min << ":" << sec << endl; 
           //cout << "Hodoscope: " << y << "/" << mo << "/" << d << " " << h << ":" << mi << ":" << s << endl; 
 
-          if(mo_==mo && d_==d && h_==h && mi_==mi)  
-          { 
-            float timediff = s_-s;
+          // convert to second 
+          int day_mq = d_-23; 
+          if(mo_==10) day_mq = day_mq+7; 
+          if(mo_==11) day_mq = day_mq+30; 
+          int sec_mq = day_mq*86400 + h_*3600 + mi_*60 + s_;  
+          int day_hs = d-23; 
+          if(mo==10) day_hs = day_hs+7; 
+          if(mo==11) day_hs = day_hs+30; 
+          int sec_hs = day_hs*86400 + h*3600 + mi*60 + s;  
+
+          //if(mo_==mo && d_==d && h_==h && mi_==mi)  
+          //{ 
+            float timediff = sec_mq-sec_hs;
             if(timediff<=-20) timediff=-19.99999;
             if(timediff>=20) timediff=19.99999;
             hdt->Fill(timediff); 
-          } 
+          //} 
 
-          if(mo_==mo && d_==d && h_==h && mi_==mi && abs(s_-s)<3)
+          //if(mo_==mo && d_==d && h_==h && mi_==mi && abs(s_-s)<3)
+          if(abs(sec_mq-sec_hs)<3)
           {
             //cout << y << "/" << mo << "/" << d << " " << h << ":" << mi << ":" << s << " ";  // HS time
             //cout << y_ << "/" << mo_ << "/" << d_ << " " << h_ << ":" << mi_ << ":" << s_ << " ";  // MQ time
             cout << beam_ << " " << run_ << " " << file_ << " " << event_ << " "; 
             cout << y << "/" << org_mo_ << "/" << org_d_ << " " << org_h_ << ":" << org_mi_ << ":" << org_s_ << " "; 
+            cout << sec_mq-sec_hs << " "; 
             cout << p0 << " " << p1 << " " << p2 << " " << p3 << " " << p4 << " ";
             for(int i=0; i<12; i++) cout << ch_[i]; 
             cout << endl;
