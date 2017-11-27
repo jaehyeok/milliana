@@ -157,11 +157,13 @@ void milliDspOne(TString data, bool drawHits=true)
   // split time and data  
   //2017/9/25 18:44:40  00010001 00000000 00000000 11111111 11111111 001101011111 
   //01234567890123456789012345678901234567890123456789012345678901234567890123456
-  //0         1         2         3         4         5         6         7
-  TString time = data(0,19);  
-  for(int i=1; i<10; i++) 
+  //0         1         2         3         4         5         6         7 
+  //1 73 280 2549 2017/10/22 9:32:19 00000000 10001000 10001000 00000000 00010001 000100110001
+  TObjArray *tx = data.Tokenize(" ");
+  TString time = ((TObjString *)(tx->At(4)))->String()+" "+((TObjString *)(tx->At(5)))->String();
+  for(int i=0; i<10; i++) 
   { 
-    time.ReplaceAll(Form("/%i/",i),Form("/0%i/",i));  
+    time.ReplaceAll(Form("/%i/",i),Form("/0%i/",i)); 
     time.ReplaceAll(Form("/%i ",i),Form("/0%i ",i));  
     time.ReplaceAll(Form(" %i:",i),Form(" 0%i:",i));  
     time.ReplaceAll(Form(":%i:",i),Form(":0%i:",i));  
@@ -173,7 +175,12 @@ void milliDspOne(TString data, bool drawHits=true)
   time.ReplaceAll("___","_");   
   time.ReplaceAll("__","_");   
   gSystem->mkdir(Form("fig/%s",time.Data()));
-  TString tempData= data(20,76); 
+  TString tempData= ((TObjString *)(tx->At(6)))->String()
+                    +" "+((TObjString *)(tx->At(7)))->String() 
+                    +" "+((TObjString *)(tx->At(8)))->String() 
+                    +" "+((TObjString *)(tx->At(9)))->String() 
+                    +" "+((TObjString *)(tx->At(10)))->String() 
+                    +" "+((TObjString *)(tx->At(11)))->String(); 
   cout << "time: " << time << endl; 
   cout << "data: " << tempData << endl; 
   vector<int> milliHits;  
@@ -263,7 +270,6 @@ void milliDspOne(TString data, bool drawHits=true)
       top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,120-40-8+10));
 
   } 
-
 
   //------------------ Create hodoscope ------------------------------- 
   if(drawHits) 
@@ -413,7 +419,8 @@ void milliDspOne(TString data, bool drawHits=true)
 // --------------------------------------------------------------------- //
 void milliDsp()
 { 
-  fstream fin("sync_sep27.txt");
+  //fstream fin("data/data_sync_mqtime_20171101.txt");
+  fstream fin("test.txt");
   string line;
   if(fin.is_open()) {
     while(fin.good()){
