@@ -89,11 +89,13 @@ void sync_events()
           //cout << "Hodoscope: " << y << "/" << mo << "/" << d << " " << h << ":" << mi << ":" << s << endl; 
 
           // convert to second 
-          int day_mq = d_-23; 
+          int day_mq = d_
+          if(mo_==9)  day_mq_ = day_mq-23; 
           if(mo_==10) day_mq = day_mq+7; 
           if(mo_==11) day_mq = day_mq+30; 
           int sec_mq = day_mq*86400 + h_*3600 + mi_*60 + s_;  
-          int day_hs = d-23; 
+          int day_hs = d; 
+          if(mo==9)  day_hs_ = day_hs-23; 
           if(mo==10) day_hs = day_hs+7; 
           if(mo==11) day_hs = day_hs+30; 
           int sec_hs = day_hs*86400 + h*3600 + mi*60 + s;  
