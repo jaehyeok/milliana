@@ -1,6 +1,13 @@
+#include "/Users/jaehyeok/macros/JaeStyle.C"
+
 void sim()
 {
-  gStyle->SetPaintTextFormat("6.2f");
+  //JaeStyle();
+  //gROOT->ForceStyle();
+
+  gStyle->SetPalette(kRainBow);
+
+  //gStyle->SetPaintTextFormat("6.2f");
   gStyle->SetOptStat(0);
 
   TH1D *h1_mc_occ = new TH1D("h1_mc_occ", "h1_mc_occ", 13, -0.5, 12.5);
@@ -14,6 +21,8 @@ void sim()
   TH1D *h1_data_occ_cate = new TH1D("h1_data_occ_cate", "h1_data_occ_cate", 8, -0.5, 7.5);
   TH2D *h2_data_occ_cate = new TH2D("h2_data_occ_cate", "h2_data_occ_cate", 3, 0.5, 3.5, 4, 0.5, 4.5);
   TH2D *h2_data_hit = new TH2D("h2_data_hit", "h2_data_hit", 25, -0.5, 24.5, 25, -0.5, 24.5);
+  TH2D *h2_data_hit_boff = new TH2D("h2_data_hit_boff", "h2_data_hit_boff", 25, -0.5, 24.5, 25, -0.5, 24.5);
+  TH2D *h2_data_hit_bon = new TH2D("h2_data_hit_bon", "h2_data_hit_bon", 25, -0.5, 24.5, 25, -0.5, 24.5);
   
 
   //ifstream fin_mc("data/hits_withHodo.txt");
@@ -220,6 +229,8 @@ void sim()
       }
       //h2_data_hitfrac->Fill(occ_hs_bot/24., occ_hs_top/16.);
       h2_data_hit->Fill(occ_hs_bot, occ_hs_top);
+      if(beam) h2_data_hit_bon->Fill(occ_hs_bot, occ_hs_top);
+      if(!beam) h2_data_hit_boff->Fill(occ_hs_bot, occ_hs_top);
 
       if(0)
       {
@@ -246,8 +257,9 @@ void sim()
   h1_mc_occ->SetLineColor(kRed);  
   h1_mc_occ->SetLineWidth(2);  
   h1_data_occ->SetMinimum(1);  
-  h1_data_occ->DrawNormalized("e");  
-  h1_mc_occ->DrawNormalized("e same");  
+  h1_data_occ->Draw("e");  
+  h1_mc_occ->Scale(h1_data_occ->Integral()/h1_mc_occ->Integral());  
+  h1_mc_occ->Draw("e same");  
   c->cd(2);
   c->cd(2)->SetLogy(1);
   h1_data_occ_layer->SetLineColor(kBlack);  
@@ -280,6 +292,12 @@ void sim()
   c->cd(7);
   c->cd(7)->SetLogz(1);
   h2_data_hit->Draw("colz text");
+  c->cd(8);
+  c->cd(8)->SetLogz(1);
+  h2_data_hit_boff->Draw("colz text");
+  c->cd(9);
+  c->cd(9)->SetLogz(1);
+  h2_data_hit_bon->Draw("colz text");
 
   c->Print("fig/data_sim.pdf");
 }

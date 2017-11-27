@@ -1,5 +1,5 @@
 void sync_events()
-{   
+{  
   cout << "Syncing HS and MQ events"  << endl;
   TH1D *hdt = new TH1D("hdt","hdt", 40, -20, 20);
   ifstream fin("data/mq/mq_nov22.dat");
