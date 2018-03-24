@@ -11,6 +11,12 @@ float htopz = -180;
 float hbotx = 0;
 float hboty = 0;
 float hbotz = 180+1.05; 
+//
+bool showHS=false;
+bool showTop=true;
+bool showSlab=true;
+bool showSheet=true;
+bool showPack=false;
 
 // function that converts data to coordinates 
 //  - "pack" is not the labels on the boards, but the order in which data is read 
@@ -26,7 +32,7 @@ TVector3 dataToBar(int pack, int d)
     cout << "[Error] wrong channel number" << endl;
     return cordBar;
   }
-  if(pack<0 || pack>4)  
+  if(pack<0 || pack>6)  
   {
     cout << "[Error] wrong pack number" << endl;
     return cordBar;
@@ -83,7 +89,7 @@ TVector3 dataToBar(int pack, int d)
     if(d==6) cordBar.SetXYZ(htopx+0, htopy+2.1*1, htopz-3+2.1);    
     if(d==7) cordBar.SetXYZ(htopx+0, htopy+2.1*0, htopz-3+2.1);    
   }
-  else  // vertical 
+  else if(pack==4)  // vertical 
   { 
     if(d==0) cordBar.SetXYZ(htopx+2.1*2-3*2-1.05, htopy+0, htopz-8+2.1);    
     if(d==1) cordBar.SetXYZ(htopx+2.1*2-2*2-1.05, htopy+0, htopz-8+2.1);    
@@ -94,7 +100,47 @@ TVector3 dataToBar(int pack, int d)
     if(d==6) cordBar.SetXYZ(htopx+2.1*2-1*2-1.05, htopy+0, htopz-8);    
     if(d==7) cordBar.SetXYZ(htopx+2.1*2-0*2-1.05, htopy+0, htopz-8);    
   }
-
+  // upgrade
+  else if(pack==5)  // vertical 
+  { 
+    if(showTop) 
+    { // bottom horizontal 
+      if(d==0)  cordBar.SetXYZ(hbotx+0, hboty+2.1*5+2.1, hbotz-5);    
+      if(d==1)  cordBar.SetXYZ(hbotx+0, hboty+2.1*4+2.1, hbotz-5);    
+      if(d==2)  cordBar.SetXYZ(hbotx+0, hboty+2.1*(-1)+2.1, hbotz-5);    
+      if(d==3)  cordBar.SetXYZ(hbotx+0, hboty+2.1*(-2)+2.1, hbotz-5);    
+      if(d==4)  cordBar.SetXYZ(hbotx+0, hboty+2.1*5+2.1, hbotz-5+2.1);    
+      if(d==5)  cordBar.SetXYZ(hbotx+0, hboty+2.1*4+2.1, hbotz-5+2.1);    
+      if(d==6)  cordBar.SetXYZ(hbotx+0, hboty+2.1*(-1)+2.1, hbotz-5+2.1);    
+      if(d==7)  cordBar.SetXYZ(hbotx+0, hboty+2.1*(-2)+2.1, hbotz-5+2.1);  
+    }
+  }
+  else 
+  { 
+    if(showTop) 
+    { 
+      /*
+    if(d==0) cordBar.SetXYZ(htopx+2.1*2-3*2-1.05, htopy+0, htopz-8+2.1);    
+    if(d==1) cordBar.SetXYZ(htopx+2.1*2-2*2-1.05, htopy+0, htopz-8+2.1);    
+    if(d==2) cordBar.SetXYZ(htopx+2.1*2-1*2-1.05, htopy+0, htopz-8+2.1);    
+    if(d==3) cordBar.SetXYZ(htopx+2.1*2-0*2-1.05, htopy+0, htopz-8+2.1);    
+    if(d==4) cordBar.SetXYZ(htopx+2.1*2-3*2-1.05, htopy+0, htopz-8);    
+    if(d==5) cordBar.SetXYZ(htopx+2.1*2-2*2-1.05, htopy+0, htopz-8);    
+    if(d==6) cordBar.SetXYZ(htopx+2.1*2-1*2-1.05, htopy+0, htopz-8);    
+    if(d==7) cordBar.SetXYZ(htopx+2.1*2-0*2-1.05, htopy+0, htopz-8);
+    */
+      // top vertical
+      if(d==0) cordBar.SetXYZ(htopx+2.1*2-5*2-1.05, htopy+0, htopz-8+2.1);    
+      if(d==1) cordBar.SetXYZ(htopx+2.1*2-4*2-1.05, htopy+0, htopz-8+2.1);    
+      if(d==2) cordBar.SetXYZ(htopx+2.1*2+1*2-1.05, htopy+0, htopz-8+2.1);    
+      if(d==3) cordBar.SetXYZ(htopx+2.1*2+2*2-1.05, htopy+0, htopz-8+2.1);    
+      if(d==4) cordBar.SetXYZ(htopx+2.1*2-5*2-1.05, htopy+0, htopz-8);    
+      if(d==5) cordBar.SetXYZ(htopx+2.1*2-4*2-1.05, htopy+0, htopz-8);    
+      if(d==6) cordBar.SetXYZ(htopx+2.1*2+1*2-1.05, htopy+0, htopz-8);    
+      if(d==7) cordBar.SetXYZ(htopx+2.1*2+2*2-1.05, htopy+0, htopz-8);    
+    }
+  }
+  
   return cordBar;
 }
 
@@ -121,14 +167,24 @@ std::vector<TVector3> getHitList(TString strData, bool isVertical)
       hitList.push_back(dataToBar(pack,d)); 
     }
   }
-
+  if(showTop) 
+  { 
+    if(isVertical) 
+    {
+      for(int d=0; d<8; d++) hitList.push_back(dataToBar(6,d));
+    }
+    else
+    {
+      for(int d=0; d<8; d++) hitList.push_back(dataToBar(5,d)); 
+    }
+  }
   return hitList;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////
 
-void milliDspOne(TString data, bool drawHits=true)
+void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
 { 
   TGeoManager *geom = new TGeoManager("geom","My 3D Project");
 
@@ -159,6 +215,8 @@ void milliDspOne(TString data, bool drawHits=true)
   //01234567890123456789012345678901234567890123456789012345678901234567890123456
   //0         1         2         3         4         5         6         7 
   //1 73 280 2549 2017/10/22 9:32:19 00000000 10001000 10001000 00000000 00010001 000100110001
+  //0         1         2         3         4         5         6         7 
+  //2018:03:21:20:09:41 10000111001111000000000000000000
   TObjArray *tx = data.Tokenize(" ");
   TString time = ((TObjString *)(tx->At(4)))->String()+" "+((TObjString *)(tx->At(5)))->String();
   for(int i=0; i<10; i++) 
@@ -193,7 +251,11 @@ void milliDspOne(TString data, bool drawHits=true)
   // bars
   //
   TGeoVolume *mbar=geom->MakeBox("mbar",Iron,2.5,2.5,40); 
-  TGeoVolume *pmt=geom->MakeTube("pmt",Iron,0,2.5,8);
+  TGeoVolume *pmt=geom->MakeTube("pmt",Iron,0,2.5,10);
+  TGeoVolume *slab=geom->MakeBox("slab",Iron,2.54*12/2,2.54*8/2,2.54/2);
+  TGeoVolume *lead=geom->MakeBox("lead",Iron,10,10,2.5);
+  TGeoVolume *hsheet=geom->MakeBox("hsheet",Iron,7*2.54/2, 0.274*2.54/2, 40*2.54/2);
+  TGeoVolume *vsheet=geom->MakeBox("vsheet",Iron,0.274*2.54/2, 7*2.54/2, 40*2.54/2);
   // can visulize the pulse height  
   //TGeoVolume *pmt_ch[12];
   //for(int i=0; i<12; i++)x pmt_ch[i] = geom->MakeTube(Form("pmt_ch%i",i),Iron,0,2.5,8);
@@ -205,33 +267,47 @@ void milliDspOne(TString data, bool drawHits=true)
       if(milliHits.at(1)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,0,120+10));
       if(milliHits.at(2)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,6,120+10));
       if(milliHits.at(3)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,6,120+10));
+      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,12,120+10));
+      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,12,120+10));
       // middle pack
       if(milliHits.at(4)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,0,0+10));
       if(milliHits.at(5)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,0,0+10));
       if(milliHits.at(6)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,6,0+10));
       if(milliHits.at(7)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,6,0+10));
+      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,12,0+10));
+      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,12,0+10));
       // top pack
       if(milliHits.at(8)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,0,-120+10));
       if(milliHits.at(9)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,0,-120+10));
       if(milliHits.at(10)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,6,-120+10));
       if(milliHits.at(11)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,6,-120+10));
+      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,12,-120+10));
+      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,12,-120+10));
       
       pmt->SetLineColor(15);  
       // bottom pack
-      if(milliHits.at(0)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,120-40-8+10));
-      if(milliHits.at(1)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,120-40-8+10));
-      if(milliHits.at(2)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,120-40-8+10));
-      if(milliHits.at(3)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,120-40-8+10));
+      if(milliHits.at(0)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,120-40-10+10));
+      if(milliHits.at(1)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,120-40-10+10));
+      if(milliHits.at(2)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,120-40-10+10));
+      if(milliHits.at(3)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,120-40-10+10));
+      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,12,120-40-10+10));
+      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,12,120-40-10+10));
       // middle pack
-      if(milliHits.at(4)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,-40-8+10));
-      if(milliHits.at(5)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,-40-8+10));
-      if(milliHits.at(6)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,-40-8+10));
-      if(milliHits.at(7)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,-40-8+10));
+      if(milliHits.at(4)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,-40-10+10));
+      if(milliHits.at(5)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,-40-10+10));
+      if(milliHits.at(6)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,-40-10+10));
+      if(milliHits.at(7)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,-40-10+10));
+      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,12,-40-10+10));
+      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,12,-40-10+10));
       // middle pack
-      if(milliHits.at(8)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,-120-40-8+10));
-      if(milliHits.at(9)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,-120-40-8+10));
-      if(milliHits.at(10)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,-120-40-8+10));
-      if(milliHits.at(11)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,-120-40-8+10));
+      if(milliHits.at(8)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,-120-40-10+10));
+      if(milliHits.at(9)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,-120-40-10+10));
+      if(milliHits.at(10)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,-120-40-10+10));
+      if(milliHits.at(11)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,-120-40-10+10));
+      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,12,-120-40-10+10));
+      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,12,-120-40-10+10)); 
+
+
   }
   else 
   { 
@@ -270,64 +346,152 @@ void milliDspOne(TString data, bool drawHits=true)
       top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,120-40-8+10));
 
   } 
+  
+  // lead bricks
+  lead->SetLineColor(18);  
+  top->AddNodeOverlap(lead,1,new TGeoTranslation(0,7.5,-63));
+  top->AddNodeOverlap(lead,1,new TGeoTranslation(0,7.5,57));
 
-  //------------------ Create hodoscope ------------------------------- 
-  if(drawHits) 
-  { 
-    //-------------------------------------------------
-    // Mark bars with hits 
-    //-------------------------------------------------
-
-    // get a list of non-zero channels
-    std::vector<TVector3> vhitList = getHitList(tempData, true); 
-    std::vector<TVector3> hhitList = getHitList(tempData, false); 
-
-    // vertical bars
-    TGeoVolume *vhhit=geom->MakeBox("vhhit",Iron,1,22.5,1);
-    vhhit->SetLineColor(46);  
-    // horizontal bars
-    TGeoVolume *hhhit=geom->MakeBox("hhhit",Iron,22.5,1,1);
-    hhhit->SetLineColor(46);  
-
-    for(int i=0; i<hhitList.size(); i++) 
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(hhitList.at(i).X(), hhitList.at(i).Y(), hhitList.at(i).Z()));
-    for(int i=0; i<vhitList.size(); i++) 
-      top->AddNodeOverlap(vhhit,1,new TGeoTranslation(vhitList.at(i).X(), vhitList.at(i).Y(), vhitList.at(i).Z())); 
-  } 
-  else 
+  // rotation matrix for slab/sheet pmts
+  // TGeoRotation (const char *name, Double_t phi, Double_t theta, Double_t psi)
+  // Euler angles: https://en.wikipedia.org/wiki/Euler_angles
+  TGeoRotation   *rot_h = new TGeoRotation("rot_h", 90., 90., 0.);
+  TGeoRotation   *rot_v = new TGeoRotation("rot_v", 0., 90., 0.);
+  TGeoRotation   *rot_vp = new TGeoRotation("rot_vp", 10., 90., 0.);
+  TGeoRotation   *rot_vm = new TGeoRotation("rot_vm", -10., 90., 0.);
+  TGeoRotation   *rot_sheetp = new TGeoRotation("rot_sheetp", 0., 0., 10.);
+  TGeoRotation   *rot_sheetm = new TGeoRotation("rot_sheetm", 0., 0., -10.);
+ 
+  if(showSlab)
   {
-    // vertical bars
-    TGeoVolume *vhbar=geom->MakeBox("vhbar",Iron,1,22.5,1);
-    vhbar->SetLineColor(12);  
-    // horizontal bars
-    TGeoVolume *hhbar=geom->MakeBox("hhbar",Iron,22.5,1,1);
-    hhbar->SetLineColor(12);  
-
-    // bottom  
-    for(int i=0; i<8; i++) 
-    {
-      top->AddNodeOverlap(vhbar,1,new TGeoTranslation(hbotx+2.1*4-i*2.1-1.05,hboty,hbotz));
-      top->AddNodeOverlap(vhbar,1,new TGeoTranslation(hbotx+2.1*4-i*2.1-1.05,hboty,hbotz+2.1));
-    }
-    for(int i=0; i<4; i++) 
-    {
-      top->AddNodeOverlap(hhbar,1,new TGeoTranslation(hbotx,hboty+i*2.1,hbotz-5));
-      top->AddNodeOverlap(hhbar,1,new TGeoTranslation(hbotx,hboty+i*2.1,hbotz-5+2.1));
-    }
-
-    // top 
-    for(int i=0; i<4; i++) 
-    {
-      top->AddNodeOverlap(vhbar,1,new TGeoTranslation(htopx+2.1*2-i*2.1-1.05,htopy,htopz-8));
-      top->AddNodeOverlap(vhbar,1,new TGeoTranslation(htopx+2.1*2-i*2.1-1.05,htopy,htopz-8+2.1));
-    }
-    for(int i=0; i<4; i++) 
-    {
-      top->AddNodeOverlap(hhbar,1,new TGeoTranslation(htopx,htopy+i*2.1,htopz-3));
-      top->AddNodeOverlap(hhbar,1,new TGeoTranslation(htopx,htopy+i*2.1,htopz-3+2.1));
-    }
+    slab->SetLineColor(89);  
+    top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-191));
+    top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-67));
+    top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,53));
+    top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,173));
+     
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(12,7.5-20,-191, rot_v));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(12,27.5,-67, rot_v));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(12,27.5,53, rot_v));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(12,27.5,173, rot_v));
   }
-    
+  
+  if(showSheet)
+  {
+    hsheet->SetLineColor(30);  
+    top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,0));
+    top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,120));
+    top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,-120));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+10,15,0-47, rot_h));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+10,15,120-47, rot_h));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+10,15,-120-47, rot_h));
+    vsheet->SetLineColor(30);  
+    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, 0, rot_sheetp)); 
+    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, 120, rot_sheetp));
+    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, -120, rot_sheetp));
+    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, 0, rot_sheetm));
+    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, 120, rot_sheetm));
+    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, -120, rot_sheetm));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+3,-13,0-47, rot_vp));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(-7*2.54/2-3,-13,0-47, rot_vm));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+3,-13,120-47, rot_vp));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(-7*2.54/2-3,-13,120-47, rot_vm));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+3,-13,-120-47, rot_vp));
+//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(-7*2.54/2-3,-13,-120-47, rot_vm));
+  } 
+  
+  //------------------ Create hodoscope ------------------------------- 
+  if(showHS) 
+  {
+    if(drawHits) 
+    { 
+      //-------------------------------------------------
+      // Mark bars with hits 
+      //-------------------------------------------------
+
+      // get a list of non-zero channels
+      std::vector<TVector3> vhitList = getHitList(tempData, true); 
+      std::vector<TVector3> hhitList = getHitList(tempData, false); 
+
+      // vertical bars
+      TGeoVolume *vhhit=geom->MakeBox("vhhit",Iron,1,22.5,1);
+      vhhit->SetLineColor(46);  
+      // horizontal bars
+      TGeoVolume *hhhit=geom->MakeBox("hhhit",Iron,22.5,1,1);
+      hhhit->SetLineColor(46);  
+
+      for(int i=0; i<hhitList.size(); i++) 
+        top->AddNodeOverlap(hhhit,1,new TGeoTranslation(hhitList.at(i).X(), hhitList.at(i).Y(), hhitList.at(i).Z()));
+      for(int i=0; i<vhitList.size(); i++) 
+        top->AddNodeOverlap(vhhit,1,new TGeoTranslation(vhitList.at(i).X(), vhitList.at(i).Y(), vhitList.at(i).Z()));
+    } 
+    else 
+    {
+      // vertical bars
+      TGeoVolume *vhbar=geom->MakeBox("vhbar",Iron,1,22.5,1);
+      vhbar->SetLineColor(12);  
+      // horizontal bars
+      TGeoVolume *hhbar=geom->MakeBox("hhbar",Iron,22.5,1,1);
+      hhbar->SetLineColor(12);  
+
+      // bottom  
+      for(int i=0; i<8; i++) 
+      {
+        top->AddNodeOverlap(vhbar,1,new TGeoTranslation(hbotx+2.1*4-i*2.1-1.05,hboty,hbotz));
+        top->AddNodeOverlap(vhbar,1,new TGeoTranslation(hbotx+2.1*4-i*2.1-1.05,hboty,hbotz+2.1));
+      }
+      for(int i=0; i<4; i++) 
+      {
+        top->AddNodeOverlap(hhbar,1,new TGeoTranslation(hbotx,hboty+i*2.1,hbotz-5));
+        top->AddNodeOverlap(hhbar,1,new TGeoTranslation(hbotx,hboty+i*2.1,hbotz-5+2.1));
+      }
+
+      // top 
+      for(int i=0; i<4; i++) 
+      {
+        top->AddNodeOverlap(vhbar,1,new TGeoTranslation(htopx+2.1*2-i*2.1-1.05,htopy,htopz-8));
+        top->AddNodeOverlap(vhbar,1,new TGeoTranslation(htopx+2.1*2-i*2.1-1.05,htopy,htopz-8+2.1));
+      }
+      for(int i=0; i<4; i++) 
+      {
+        top->AddNodeOverlap(hhbar,1,new TGeoTranslation(htopx,htopy+i*2.1,htopz-3));
+        top->AddNodeOverlap(hhbar,1,new TGeoTranslation(htopx,htopy+i*2.1,htopz-3+2.1));
+      }
+    }
+  } 
+  
+  // trackpacks
+  if(showPack) 
+  {
+      TGeoVolume *hhhit=geom->MakeBox("hhhit",Iron,22.5,1,1);
+      hhhit->SetLineColor(46);  
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     -35));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     -35-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     -35-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     -35-2.1*3));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, -35));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, -35-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, -35-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, -35-2.1*3));
+
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     25));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     25-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     25-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     25-2.1*3));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 25));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 25-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 25-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 25-2.1*3));
+      
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     85));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     85-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     85-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     85-2.1*3));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 85));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 85-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 85-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 85-2.1*3));
+  }
   // 
   top->SetVisibility(0);
   geom->CloseGeometry();
@@ -412,15 +576,16 @@ void milliDspOne(TString data, bool drawHits=true)
   v->DoDraw();  
 
   // cleaning
-  delete geom;
-  delete v;
+  //delete geom;
+  //delete v;
 } 
 
 // --------------------------------------------------------------------- //
 void milliDsp()
-{ 
+{
+  bool onlyMQ=true;
   //fstream fin("data/data_sync_mqtime_20171101.txt");
-  fstream fin("test.txt");
+  fstream fin("test_dsp.txt");
   string line;
   if(fin.is_open()) {
     while(fin.good()){
@@ -429,7 +594,7 @@ void milliDsp()
       getline(fin, line);  
       if( line.find(" ")==string::npos ) continue;
       TString data = line; 
-      milliDspOne(data);
+      milliDspOne(data, onlyMQ);
     }
   }
   fin.close();
