@@ -10,12 +10,16 @@ float htopz = -180;
 // bottom 
 float hbotx = 0;
 float hboty = 0;
-float hbotz = 180+1.05; 
+float hbotz = 180+1.05+2; 
 //
+bool showRow1=true;
+bool showRow2=true;
+bool showRow3=true;
+bool showBar=false; 
+bool showBrick=false;
+bool showSlab=false;
+bool showSheet=false;
 bool showHS=false;
-bool showTop=true;
-bool showSlab=true;
-bool showSheet=true;
 bool showPack=false;
 
 // function that converts data to coordinates 
@@ -32,7 +36,7 @@ TVector3 dataToBar(int pack, int d)
     cout << "[Error] wrong channel number" << endl;
     return cordBar;
   }
-  if(pack<0 || pack>6)  
+  if(pack<0 || pack>8)  
   {
     cout << "[Error] wrong pack number" << endl;
     return cordBar;
@@ -43,7 +47,9 @@ TVector3 dataToBar(int pack, int d)
      hbotx,hboty+i*2.1,hbotz-5));
      hbotx,hboty+i*2.1,hbotz-5+2.1));
 */ 
+  //  
   // bottom
+  //  
   if(pack==0) // vertical 
   { 
     if(d==0) cordBar.SetXYZ(hbotx+2.1*4-2.1*7-1.05, hboty+0, hbotz+2.1);    
@@ -68,77 +74,72 @@ TVector3 dataToBar(int pack, int d)
   }
   else if(pack==2)  // horizontal
   { 
-    if(d==0) cordBar.SetXYZ(hbotx+0, hboty+2.1*3+2.1, hbotz-5);    
-    if(d==1) cordBar.SetXYZ(hbotx+0, hboty+2.1*2+2.1, hbotz-5);    
-    if(d==2) cordBar.SetXYZ(hbotx+0, hboty+2.1*1+2.1, hbotz-5);    
-    if(d==3) cordBar.SetXYZ(hbotx+0, hboty+2.1*0+2.1, hbotz-5);    
-    if(d==4) cordBar.SetXYZ(hbotx+0, hboty+2.1*3+2.1, hbotz-5+2.1);    
-    if(d==5) cordBar.SetXYZ(hbotx+0, hboty+2.1*2+2.1, hbotz-5+2.1);    
-    if(d==6) cordBar.SetXYZ(hbotx+0, hboty+2.1*1+2.1, hbotz-5+2.1);    
-    if(d==7) cordBar.SetXYZ(hbotx+0, hboty+2.1*0+2.1, hbotz-5+2.1);    
+    if(d==0) cordBar.SetXYZ(hbotx+0, hboty+2.1*3+2.1*3, hbotz-5);    
+    if(d==1) cordBar.SetXYZ(hbotx+0, hboty+2.1*2+2.1*3, hbotz-5);    
+    if(d==2) cordBar.SetXYZ(hbotx+0, hboty+2.1*1+2.1*3, hbotz-5);    
+    if(d==3) cordBar.SetXYZ(hbotx+0, hboty+2.1*0+2.1*3, hbotz-5);    
+    if(d==4) cordBar.SetXYZ(hbotx+0, hboty+2.1*3+2.1*3, hbotz-5+2.1);    
+    if(d==5) cordBar.SetXYZ(hbotx+0, hboty+2.1*2+2.1*3, hbotz-5+2.1);    
+    if(d==6) cordBar.SetXYZ(hbotx+0, hboty+2.1*1+2.1*3, hbotz-5+2.1);    
+    if(d==7) cordBar.SetXYZ(hbotx+0, hboty+2.1*0+2.1*3, hbotz-5+2.1);    
   }
-  // top 
   else if(pack==3) // horizontal
   { 
-    if(d==0) cordBar.SetXYZ(htopx+0, htopy+2.1*3, htopz-3);    
-    if(d==1) cordBar.SetXYZ(htopx+0, htopy+2.1*2, htopz-3);    
-    if(d==2) cordBar.SetXYZ(htopx+0, htopy+2.1*1, htopz-3);    
-    if(d==3) cordBar.SetXYZ(htopx+0, htopy+2.1*0, htopz-3);    
-    if(d==4) cordBar.SetXYZ(htopx+0, htopy+2.1*3, htopz-3+2.1);    
-    if(d==5) cordBar.SetXYZ(htopx+0, htopy+2.1*2, htopz-3+2.1);    
-    if(d==6) cordBar.SetXYZ(htopx+0, htopy+2.1*1, htopz-3+2.1);    
-    if(d==7) cordBar.SetXYZ(htopx+0, htopy+2.1*0, htopz-3+2.1);    
+    if(d==0) cordBar.SetXYZ(hbotx+0, hboty+2.1*3-2.1, hbotz-5);    
+    if(d==1) cordBar.SetXYZ(hbotx+0, hboty+2.1*2-2.1, hbotz-5);    
+    if(d==2) cordBar.SetXYZ(hbotx+0, hboty+2.1*1-2.1, hbotz-5);    
+    if(d==3) cordBar.SetXYZ(hbotx+0, hboty+2.1*0-2.1, hbotz-5);    
+    if(d==4) cordBar.SetXYZ(hbotx+0, hboty+2.1*3-2.1, hbotz-5+2.1);    
+    if(d==5) cordBar.SetXYZ(hbotx+0, hboty+2.1*2-2.1, hbotz-5+2.1);    
+    if(d==6) cordBar.SetXYZ(hbotx+0, hboty+2.1*1-2.1, hbotz-5+2.1);    
+    if(d==7) cordBar.SetXYZ(hbotx+0, hboty+2.1*0-2.1, hbotz-5+2.1);    
   }
-  else if(pack==4)  // vertical 
+  //  
+  // top 
+  //  
+  else if(pack==4)  // horizontal: note that pack4 is down 
   { 
-    if(d==0) cordBar.SetXYZ(htopx+2.1*2-3*2-1.05, htopy+0, htopz-8+2.1);    
-    if(d==1) cordBar.SetXYZ(htopx+2.1*2-2*2-1.05, htopy+0, htopz-8+2.1);    
-    if(d==2) cordBar.SetXYZ(htopx+2.1*2-1*2-1.05, htopy+0, htopz-8+2.1);    
-    if(d==3) cordBar.SetXYZ(htopx+2.1*2-0*2-1.05, htopy+0, htopz-8+2.1);    
-    if(d==4) cordBar.SetXYZ(htopx+2.1*2-3*2-1.05, htopy+0, htopz-8);    
-    if(d==5) cordBar.SetXYZ(htopx+2.1*2-2*2-1.05, htopy+0, htopz-8);    
-    if(d==6) cordBar.SetXYZ(htopx+2.1*2-1*2-1.05, htopy+0, htopz-8);    
-    if(d==7) cordBar.SetXYZ(htopx+2.1*2-0*2-1.05, htopy+0, htopz-8);    
+    if(d==0) cordBar.SetXYZ(hbotx+0, hboty+2.1*3-2.1, htopz-3);
+    if(d==1) cordBar.SetXYZ(hbotx+0, hboty+2.1*2-2.1, htopz-3);
+    if(d==2) cordBar.SetXYZ(hbotx+0, hboty+2.1*1-2.1, htopz-3);
+    if(d==3) cordBar.SetXYZ(hbotx+0, hboty+2.1*0-2.1, htopz-3);
+    if(d==4) cordBar.SetXYZ(hbotx+0, hboty+2.1*3-2.1, htopz-3+2.1);       
+    if(d==5) cordBar.SetXYZ(hbotx+0, hboty+2.1*2-2.1, htopz-3+2.1);       
+    if(d==6) cordBar.SetXYZ(hbotx+0, hboty+2.1*1-2.1, htopz-3+2.1);       
+    if(d==7) cordBar.SetXYZ(hbotx+0, hboty+2.1*0-2.1, htopz-3+2.1);       
   }
-  // upgrade
-  else if(pack==5)  // vertical 
+  else if(pack==5)  // horizontal 
   { 
-    if(showTop) 
-    { // bottom horizontal 
-      if(d==0)  cordBar.SetXYZ(hbotx+0, hboty+2.1*5+2.1, hbotz-5);    
-      if(d==1)  cordBar.SetXYZ(hbotx+0, hboty+2.1*4+2.1, hbotz-5);    
-      if(d==2)  cordBar.SetXYZ(hbotx+0, hboty+2.1*(-1)+2.1, hbotz-5);    
-      if(d==3)  cordBar.SetXYZ(hbotx+0, hboty+2.1*(-2)+2.1, hbotz-5);    
-      if(d==4)  cordBar.SetXYZ(hbotx+0, hboty+2.1*5+2.1, hbotz-5+2.1);    
-      if(d==5)  cordBar.SetXYZ(hbotx+0, hboty+2.1*4+2.1, hbotz-5+2.1);    
-      if(d==6)  cordBar.SetXYZ(hbotx+0, hboty+2.1*(-1)+2.1, hbotz-5+2.1);    
-      if(d==7)  cordBar.SetXYZ(hbotx+0, hboty+2.1*(-2)+2.1, hbotz-5+2.1);  
-    }
+    if(d==0) cordBar.SetXYZ(hbotx+0, hboty+2.1*3+2.1*3, htopz-3);
+    if(d==1) cordBar.SetXYZ(hbotx+0, hboty+2.1*2+2.1*3, htopz-3);
+    if(d==2) cordBar.SetXYZ(hbotx+0, hboty+2.1*1+2.1*3, htopz-3);
+    if(d==3) cordBar.SetXYZ(hbotx+0, hboty+2.1*0+2.1*3, htopz-3);
+    if(d==4) cordBar.SetXYZ(hbotx+0, hboty+2.1*3+2.1*3, htopz-3+2.1);        
+    if(d==5) cordBar.SetXYZ(hbotx+0, hboty+2.1*2+2.1*3, htopz-3+2.1);        
+    if(d==6) cordBar.SetXYZ(hbotx+0, hboty+2.1*1+2.1*3, htopz-3+2.1);        
+    if(d==7) cordBar.SetXYZ(hbotx+0, hboty+2.1*0+2.1*3, htopz-3+2.1);        
   }
-  else 
+  else if(pack==6)  // vertical 
   { 
-    if(showTop) 
-    { 
-      /*
-    if(d==0) cordBar.SetXYZ(htopx+2.1*2-3*2-1.05, htopy+0, htopz-8+2.1);    
-    if(d==1) cordBar.SetXYZ(htopx+2.1*2-2*2-1.05, htopy+0, htopz-8+2.1);    
-    if(d==2) cordBar.SetXYZ(htopx+2.1*2-1*2-1.05, htopy+0, htopz-8+2.1);    
-    if(d==3) cordBar.SetXYZ(htopx+2.1*2-0*2-1.05, htopy+0, htopz-8+2.1);    
-    if(d==4) cordBar.SetXYZ(htopx+2.1*2-3*2-1.05, htopy+0, htopz-8);    
-    if(d==5) cordBar.SetXYZ(htopx+2.1*2-2*2-1.05, htopy+0, htopz-8);    
-    if(d==6) cordBar.SetXYZ(htopx+2.1*2-1*2-1.05, htopy+0, htopz-8);    
-    if(d==7) cordBar.SetXYZ(htopx+2.1*2-0*2-1.05, htopy+0, htopz-8);
-    */
-      // top vertical
-      if(d==0) cordBar.SetXYZ(htopx+2.1*2-5*2-1.05, htopy+0, htopz-8+2.1);    
-      if(d==1) cordBar.SetXYZ(htopx+2.1*2-4*2-1.05, htopy+0, htopz-8+2.1);    
-      if(d==2) cordBar.SetXYZ(htopx+2.1*2+1*2-1.05, htopy+0, htopz-8+2.1);    
-      if(d==3) cordBar.SetXYZ(htopx+2.1*2+2*2-1.05, htopy+0, htopz-8+2.1);    
-      if(d==4) cordBar.SetXYZ(htopx+2.1*2-5*2-1.05, htopy+0, htopz-8);    
-      if(d==5) cordBar.SetXYZ(htopx+2.1*2-4*2-1.05, htopy+0, htopz-8);    
-      if(d==6) cordBar.SetXYZ(htopx+2.1*2+1*2-1.05, htopy+0, htopz-8);    
-      if(d==7) cordBar.SetXYZ(htopx+2.1*2+2*2-1.05, htopy+0, htopz-8);    
-    }
+    if(d==0) cordBar.SetXYZ(htopx+2.1*3+1.05, htopy+0, htopz-8);    
+    if(d==1) cordBar.SetXYZ(htopx+2.1*2+1.05, htopy+0, htopz-8);    
+    if(d==2) cordBar.SetXYZ(htopx+2.1*1+1.05, htopy+0, htopz-8);    
+    if(d==3) cordBar.SetXYZ(htopx+2.1*0+1.05, htopy+0, htopz-8);    
+    if(d==4) cordBar.SetXYZ(htopx+2.1*3+1.05, htopy+0, htopz-8+2.1);    
+    if(d==5) cordBar.SetXYZ(htopx+2.1*2+1.05, htopy+0, htopz-8+2.1);    
+    if(d==6) cordBar.SetXYZ(htopx+2.1*1+1.05, htopy+0, htopz-8+2.1);    
+    if(d==7) cordBar.SetXYZ(htopx+2.1*0+1.05, htopy+0, htopz-8+2.1);    
+  }
+  else if(pack==7)  // vertical 
+  { 
+    if(d==0) cordBar.SetXYZ(htopx-2.1*0-1.05, htopy+0, htopz-8);    
+    if(d==1) cordBar.SetXYZ(htopx-2.1*1-1.05, htopy+0, htopz-8);    
+    if(d==2) cordBar.SetXYZ(htopx-2.1*2-1.05, htopy+0, htopz-8);    
+    if(d==3) cordBar.SetXYZ(htopx-2.1*3-1.05, htopy+0, htopz-8);    
+    if(d==4) cordBar.SetXYZ(htopx-2.1*0-1.05, htopy+0, htopz-8+2.1);    
+    if(d==5) cordBar.SetXYZ(htopx-2.1*1-1.05, htopy+0, htopz-8+2.1);    
+    if(d==6) cordBar.SetXYZ(htopx-2.1*2-1.05, htopy+0, htopz-8+2.1);    
+    if(d==7) cordBar.SetXYZ(htopx-2.1*3-1.05, htopy+0, htopz-8+2.1);    
   }
   
   return cordBar;
@@ -152,14 +153,13 @@ std::vector<TVector3> getHitList(TString strData, bool isVertical)
    
   std::vector<TVector3> hitList;
  
-  for(int i=0; i<8*5; i++)
+  for(int i=0; i<8*8; i++)
   { 
     int pack = i/8;
     int d = i%8; 
 
-    if(isVertical && (pack==2 || pack==3)) continue;
-    if(!isVertical && (pack<2 || pack>3)) continue;
-    
+    if(isVertical && (pack==2 || pack==3 || pack==4 || pack==5)) continue;
+    if(!isVertical && (pack<2 || pack>5)) continue;
 
     if(strData[i]=='1')  
     {
@@ -167,24 +167,14 @@ std::vector<TVector3> getHitList(TString strData, bool isVertical)
       hitList.push_back(dataToBar(pack,d)); 
     }
   }
-  if(showTop) 
-  { 
-    if(isVertical) 
-    {
-      for(int d=0; d<8; d++) hitList.push_back(dataToBar(6,d));
-    }
-    else
-    {
-      for(int d=0; d<8; d++) hitList.push_back(dataToBar(5,d)); 
-    }
-  }
+  
   return hitList;
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////
 
-void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
+void milliDspOne(TString data, bool onlyMQ, int id, bool drawHits=true)
 { 
   TGeoManager *geom = new TGeoManager("geom","My 3D Project");
 
@@ -192,10 +182,14 @@ void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
   TGeoMaterial *vacuum = new TGeoMaterial("vacuum",0,0,0);
   TGeoMaterial *Fe = new TGeoMaterial("Fe",55.84,26.7,7.87);
   TGeoMaterial *Cu = new TGeoMaterial("Cu",63.549,29,8.92);
+  TGeoMaterial *Fe_transp = new TGeoMaterial("Fe_transp",55.84,26.7,7.87);
+  Fe_transp->SetTransparency(30);
 
   //------------------Creat media----------------------------------
   TGeoMedium *Air = new TGeoMedium("Air",0,vacuum);
   TGeoMedium *Iron = new TGeoMedium("Iron",1,Fe);
+  TGeoMedium *sheet_mat = new TGeoMedium("sheet_mat",1,Fe_transp);
+  TGeoMedium *slab_mat = new TGeoMedium("slab_mat",1,Fe_transp);
 
   //------------------Create TOP volume----------------------------
   TGeoVolume *top = geom->MakeBox("top",Air,100,100,100);
@@ -211,39 +205,45 @@ void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
 
   //------------------ Data ---------------------------- 
   // split time and data  
-  //2017/9/25 18:44:40  00010001 00000000 00000000 11111111 11111111 001101011111 
   //01234567890123456789012345678901234567890123456789012345678901234567890123456
   //0         1         2         3         4         5         6         7 
   //1 73 280 2549 2017/10/22 9:32:19 00000000 10001000 10001000 00000000 00010001 000100110001
+  
+  //01234567890123456789012345678901234567890123456789012345678901234567890123456
   //0         1         2         3         4         5         6         7 
   //2018:03:21:20:09:41 10000111001111000000000000000000
+  //1524996495.743901 816 129   824 1 00000001000000100011110000001100
   TObjArray *tx = data.Tokenize(" ");
-  TString time = ((TObjString *)(tx->At(4)))->String()+" "+((TObjString *)(tx->At(5)))->String();
-  for(int i=0; i<10; i++) 
-  { 
-    time.ReplaceAll(Form("/%i/",i),Form("/0%i/",i)); 
-    time.ReplaceAll(Form("/%i ",i),Form("/0%i ",i));  
-    time.ReplaceAll(Form(" %i:",i),Form(" 0%i:",i));  
-    time.ReplaceAll(Form(":%i:",i),Form(":0%i:",i));  
-    time.ReplaceAll(Form(":%i ",i),Form(":0%i ",i));  
+  TString time; 
+  TString run; 
+  TString file; 
+  TString event; 
+  TString beam; 
+  time = ((TObjString *)(tx->At(0)))->String();
+  gSystem->mkdir(Form("fig/%s_%i",time.Data(), id));
+  run = ((TObjString *)(tx->At(1)))->String();
+  file = ((TObjString *)(tx->At(2)))->String();
+  event = ((TObjString *)(tx->At(3)))->String();
+  beam = ((TObjString *)(tx->At(4)))->String();
+  TString mqData;
+  TString hsData;
+  if(onlyMQ)
+  {
+    mqData = ((TObjString *)(tx->At(5)))->String();
   }
-  time.ReplaceAll(" ","_");  
-  time.ReplaceAll(":","");  
-  time.ReplaceAll("/","");  
-  time.ReplaceAll("___","_");   
-  time.ReplaceAll("__","_");   
-  gSystem->mkdir(Form("fig/%s",time.Data()));
-  TString tempData= ((TObjString *)(tx->At(6)))->String()
-                    +" "+((TObjString *)(tx->At(7)))->String() 
-                    +" "+((TObjString *)(tx->At(8)))->String() 
-                    +" "+((TObjString *)(tx->At(9)))->String() 
-                    +" "+((TObjString *)(tx->At(10)))->String() 
-                    +" "+((TObjString *)(tx->At(11)))->String(); 
+  else
+  {
+    mqData = ((TObjString *)(tx->At(5)))->String();
+    hsData = ((TObjString *)(tx->At(6)))->String() 
+                    +" "+((TObjString *)(tx->At(7)))->String(); 
+  }
   cout << "time: " << time << endl; 
-  cout << "data: " << tempData << endl; 
+  cout << "mq data: " << mqData << endl; 
+  cout << "hs data: " << hsData << endl; 
+  
+  // MQ hits 
   vector<int> milliHits;  
-  for(int i=0; i<12; i++) milliHits.push_back(tempData[i+45]=='1'?1:0);  
-    
+  for(int i=0; i<32; i++) milliHits.push_back(mqData[i]=='1'?1:0);  
 
   //------------------ Create milliqan ----------------------------
   
@@ -252,62 +252,114 @@ void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
   //
   TGeoVolume *mbar=geom->MakeBox("mbar",Iron,2.5,2.5,40); 
   TGeoVolume *pmt=geom->MakeTube("pmt",Iron,0,2.5,10);
-  TGeoVolume *slab=geom->MakeBox("slab",Iron,2.54*12/2,2.54*8/2,2.54/2);
+  TGeoVolume *slab=geom->MakeBox("slab",slab_mat,2.54*8/2,2.54*12/2,2.54/2);
   TGeoVolume *lead=geom->MakeBox("lead",Iron,10,10,2.5);
-  TGeoVolume *hsheet=geom->MakeBox("hsheet",Iron,7*2.54/2, 0.274*2.54/2, 40*2.54/2);
-  TGeoVolume *vsheet=geom->MakeBox("vsheet",Iron,0.274*2.54/2, 7*2.54/2, 40*2.54/2);
+  TGeoVolume *hsheet=geom->MakeBox("hsheet",sheet_mat,7*2.54/2, 0.274*2.54/2, 40*2.54/2);
+  TGeoVolume *vsheet=geom->MakeBox("vsheet",sheet_mat,0.274*2.54/2, 7*2.54/2, 40*2.54/2);
   // can visulize the pulse height  
   //TGeoVolume *pmt_ch[12];
   //for(int i=0; i<12; i++)x pmt_ch[i] = geom->MakeTube(Form("pmt_ch%i",i),Iron,0,2.5,8);
   if(drawHits)
   {
       mbar->SetLineColor(38); 
-      // bottom pack
-      if(milliHits.at(0)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,0,120+10));
-      if(milliHits.at(1)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,0,120+10));
-      if(milliHits.at(2)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,6,120+10));
-      if(milliHits.at(3)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,6,120+10));
-      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,12,120+10));
-      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,12,120+10));
-      // middle pack
-      if(milliHits.at(4)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,0,0+10));
-      if(milliHits.at(5)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,0,0+10));
-      if(milliHits.at(6)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,6,0+10));
-      if(milliHits.at(7)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,6,0+10));
-      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,12,0+10));
-      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,12,0+10));
-      // top pack
-      if(milliHits.at(8)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,0,-120+10));
-      if(milliHits.at(9)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,0,-120+10));
-      if(milliHits.at(10)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,6,-120+10));
-      if(milliHits.at(11)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,6,-120+10));
-      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,12,-120+10));
-      if(showTop) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,12,-120+10));
+      // layer 1 
+      if(showRow1)
+      {
+        if(milliHits.at(8))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,0,120+10+2));  // 0.8
+        if(milliHits.at(9))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,0,120+10+2));   // 0.9
+      } 
+      if(showRow2)
+      {
+        if(milliHits.at(24)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,6,120+10+2));  // 1.8
+        if(milliHits.at(25)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,6,120+10+2));   // 1.9
+      } 
+      if(showRow3)
+      {
+        if(milliHits.at(0))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,12,120+10+2)); // 0.0
+        if(milliHits.at(1))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,12,120+10+2));  // 0.1
+      } 
+      // layer 2 
+      if(showRow1)
+      {
+        if(milliHits.at(12)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,0,0+10));    // 0.12
+        if(milliHits.at(13)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,0,0+10));     // 0.13
+      } 
+      if(showRow2)
+      {
+        if(milliHits.at(16)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,6,0+10));    // 1.0
+        if(milliHits.at(17)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,6,0+10));     // 1.1
+      } 
+      if(showRow3)
+      {
+        if(milliHits.at(6))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,12,0+10));   // 0.6
+        if(milliHits.at(7))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,12,0+10));    // 0.7
+      } 
+      // layer 3 
+      if(showRow1)
+      {
+        if(milliHits.at(4))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,0,-120+10-5));  // 0.4
+        if(milliHits.at(5))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,0,-120+10-5));   // 0.5
+      } 
+      if(showRow2)
+      {
+        if(milliHits.at(22)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,6,-120+10-5)); // 1.6
+        if(milliHits.at(23)) top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,6,-120+10-5));  // 1.7
+      } 
+      if(showRow3)
+      {
+        if(milliHits.at(2))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(-3,12,-120+10-5)); // 0.2
+        if(milliHits.at(3))  top->AddNodeOverlap(mbar,1,new TGeoTranslation(3,12,-120+10-5));  // 0.3
+      } 
       
       pmt->SetLineColor(15);  
-      // bottom pack
-      if(milliHits.at(0)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,120-40-10+10));
-      if(milliHits.at(1)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,120-40-10+10));
-      if(milliHits.at(2)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,120-40-10+10));
-      if(milliHits.at(3)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,120-40-10+10));
-      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,12,120-40-10+10));
-      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,12,120-40-10+10));
-      // middle pack
-      if(milliHits.at(4)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,-40-10+10));
-      if(milliHits.at(5)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,-40-10+10));
-      if(milliHits.at(6)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,-40-10+10));
-      if(milliHits.at(7)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,-40-10+10));
-      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,12,-40-10+10));
-      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,12,-40-10+10));
-      // middle pack
-      if(milliHits.at(8)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,-120-40-10+10));
-      if(milliHits.at(9)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,-120-40-10+10));
-      if(milliHits.at(10)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,-120-40-10+10));
-      if(milliHits.at(11)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,-120-40-10+10));
-      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,12,-120-40-10+10));
-      if(showTop) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,12,-120-40-10+10)); 
-
-
+      // layer 1 
+      if(showRow1)
+      {
+        if(milliHits.at(8))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,120-40-10+10+2));  // 0.8
+        if(milliHits.at(9))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,120-40-10+10+2));   // 0.9
+      } 
+      if(showRow2)
+      {
+        if(milliHits.at(24)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,120-40-10+10+2));  // 1.8
+        if(milliHits.at(25)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,120-40-10+10+2));   // 1.9
+      } 
+      if(showRow3)
+      {
+        if(milliHits.at(0))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,12,120-40-10+10+2)); // 0.0
+        if(milliHits.at(1))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,12,120-40-10+10+2));  // 0.1
+      } 
+      // layer 2 
+      if(showRow1)
+      {
+        if(milliHits.at(12)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,-40-10+10));  // 0.12
+        if(milliHits.at(13)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,-40-10+10));   // 0.13
+      } 
+      if(showRow2)
+      {
+        if(milliHits.at(16)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,-40-10+10));  // 1.0
+        if(milliHits.at(17)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,-40-10+10));   // 1.1
+      } 
+      if(showRow3)
+      {
+        if(milliHits.at(6))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,12,-40-10+10)); // 0.6
+        if(milliHits.at(7))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,12,-40-10+10));  // 0.7
+      } 
+      // layer 3 
+      if(showRow1)
+      {
+        if(milliHits.at(4))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,0,-120-40-10+10-5));  // 0.4
+        if(milliHits.at(5))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,0,-120-40-10+10-5));   // 0.5
+      } 
+      if(showRow2)
+      {
+        if(milliHits.at(22)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,6,-120-40-10+10-5)); // 1.6
+        if(milliHits.at(23)) top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,6,-120-40-10+10-5));  // 1.7
+      } 
+      if(showRow3)
+      {
+        if(milliHits.at(2))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(-3,12,-120-40-10+10-5)); // 0.2
+        if(milliHits.at(3))  top->AddNodeOverlap(pmt,1,new TGeoTranslation(3,12,-120-40-10+10-5));  // 0.3
+      } 
   }
   else 
   { 
@@ -348,9 +400,12 @@ void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
   } 
   
   // lead bricks
-  lead->SetLineColor(18);  
-  top->AddNodeOverlap(lead,1,new TGeoTranslation(0,7.5,-63));
-  top->AddNodeOverlap(lead,1,new TGeoTranslation(0,7.5,57));
+  if(showBrick)
+  {
+    lead->SetLineColor(15);  
+    top->AddNodeOverlap(lead,1,new TGeoTranslation(0,5,-68));
+    top->AddNodeOverlap(lead,1,new TGeoTranslation(0,5,57));
+  }
 
   // rotation matrix for slab/sheet pmts
   // TGeoRotation (const char *name, Double_t phi, Double_t theta, Double_t psi)
@@ -365,39 +420,28 @@ void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
   if(showSlab)
   {
     slab->SetLineColor(89);  
-    top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-191));
-    top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-67));
-    top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,53));
-    top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,173));
-     
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(12,7.5-20,-191, rot_v));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(12,27.5,-67, rot_v));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(12,27.5,53, rot_v));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(12,27.5,173, rot_v));
+    if(milliHits.at(21)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-178)); // slab3 1.5 
+    if(milliHits.at(28)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-73));  // slab2 1.12
+    if(milliHits.at(20)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,53));   // slab1 1.4
+    if(milliHits.at(18)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,175));  // slab0 1.2
   }
   
   if(showSheet)
   {
     hsheet->SetLineColor(30);  
-    top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,0));
-    top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,120));
-    top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,-120));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+10,15,0-47, rot_h));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+10,15,120-47, rot_h));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+10,15,-120-47, rot_h));
     vsheet->SetLineColor(30);  
-    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, 0, rot_sheetp)); 
-    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, 120, rot_sheetp));
-    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, -120, rot_sheetp));
-    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, 0, rot_sheetm));
-    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, 120, rot_sheetm));
-    top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, -120, rot_sheetm));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+3,-13,0-47, rot_vp));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(-7*2.54/2-3,-13,0-47, rot_vm));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+3,-13,120-47, rot_vp));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(-7*2.54/2-3,-13,120-47, rot_vm));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(7*2.54/2+3,-13,-120-47, rot_vp));
-//    top->AddNodeOverlap(pmt,1,new TGeoCombiTrans(-7*2.54/2-3,-13,-120-47, rot_vm));
+    // layer 1
+    if(milliHits.at(27)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, 120+2, rot_sheetm)); // 1.11
+    if(milliHits.at(10)) top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,120+2));                                // 0.10
+    if(milliHits.at(29)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, 120+2, rot_sheetp));  // 1.13
+    // layer 2 
+    if(milliHits.at(30)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, 0, rot_sheetm));   // 1.14
+    if(milliHits.at(11)) top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,0));                                  // 0.11
+    if(milliHits.at(19)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, 0, rot_sheetp));    // 1.3
+    // layer 3 
+    if(milliHits.at(31)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, -120-5, rot_sheetm)); // 1.15
+    if(milliHits.at(14)) top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,-120-5));                                // 0.14
+    if(milliHits.at(26)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, -120-5, rot_sheetp));  // 1.10
   } 
   
   //------------------ Create hodoscope ------------------------------- 
@@ -410,8 +454,8 @@ void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
       //-------------------------------------------------
 
       // get a list of non-zero channels
-      std::vector<TVector3> vhitList = getHitList(tempData, true); 
-      std::vector<TVector3> hhitList = getHitList(tempData, false); 
+      std::vector<TVector3> vhitList = getHitList(hsData, true); 
+      std::vector<TVector3> hhitList = getHitList(hsData, false); 
 
       // vertical bars
       TGeoVolume *vhhit=geom->MakeBox("vhhit",Iron,1,22.5,1);
@@ -465,32 +509,32 @@ void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
   {
       TGeoVolume *hhhit=geom->MakeBox("hhhit",Iron,22.5,1,1);
       hhhit->SetLineColor(46);  
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     -35));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     -35-2.1*1));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     -35-2.1*2));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     -35-2.1*3));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, -35));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, -35-2.1*1));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, -35-2.1*2));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, -35-2.1*3));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     40));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     40-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     40-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     40-2.1*3));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 40));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 40-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 40-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 40-2.1*3));
 
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     25));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     25-2.1*1));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     25-2.1*2));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     25-2.1*3));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 25));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 25-2.1*1));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 25-2.1*2));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 25-2.1*3));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     80));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     80-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     80-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20,     80-2.1*3));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 80));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 80-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 80-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, -20-2.1, 80-2.1*3));
       
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     85));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     85-2.1*1));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     85-2.1*2));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     85-2.1*3));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 85));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 85-2.1*1));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 85-2.1*2));
-      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 85-2.1*3));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     120));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     120-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     120-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17,     120-2.1*3));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 120));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 120-2.1*1));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 120-2.1*2));
+      top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 120-2.1*3));
   }
   // 
   top->SetVisibility(0);
@@ -520,59 +564,51 @@ void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
   // Camera 
   v->SetCurrentCamera(TGLViewer::kCameraPerspXOZ); 
   Double_t center[3]={0,0,0}; 
+
   // side view
   v->CurrentCamera().Reset(); 
-  v->CurrentCamera().Configure(6, 30., center, 0.01, 0.); 
-  //v->SavePicture(Form("fig/%s/%s_side.pdf",time.Data(),time.Data())); 
-  v->SavePictureUsingFBO(Form("fig/%s/%s_side.png",time.Data(),time.Data()),1000,200,0); 
+  v->CurrentCamera().Configure(6, 30., center, 0.01, -3.141592); 
+  v->SavePictureUsingFBO(Form("fig/%s_%i/%s_%i_side.png",time.Data(),id,time.Data(),id),1000,200,0); 
   // top view
   v->CurrentCamera().Reset(); 
-  v->CurrentCamera().Configure(6, 30., center, -3.141592/2+0.01, 0.00); 
-  //v->SavePicture(Form("fig/%s/%s_top.pdf",time.Data(),time.Data())); 
-  v->SavePictureUsingFBO(Form("fig/%s/%s_top.png",time.Data(),time.Data()),1000,200,0.5); 
+  v->CurrentCamera().Configure(6, 30., center, -3.141592/2+0.01, -3.141592); 
+  v->SavePictureUsingFBO(Form("fig/%s_%i/%s_%i_top.png",time.Data(),id,time.Data(),id),1000,200,0); 
   // perspectivpe view
   v->CurrentCamera().Reset(); 
-  v->CurrentCamera().Configure(25, 30., center, -1., -1.); 
-  //v->SavePicture(Form("fig/%s/%s_pers.pdf",time.Data(),time.Data())); 
-  v->SavePictureUsingFBO(Form("fig/%s/%s_pers.png",time.Data(),time.Data()),1000,1000,0.01); 
-  
+  v->CurrentCamera().Configure(25, 30., center, -0.5, -2); 
+  v->SavePictureUsingFBO(Form("fig/%s_%i/%s_%i_pers.png",time.Data(),id,time.Data(),id),1000,1000,0.01); 
+ /* 
   // perspectivpe view bottomw component
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, -1., -1.); 
   v->CurrentCamera().Truck(95,-125); 
-  //v->SavePicture(Form("fig/%s/%s_pers_bottom.pdf",time.Data(),time.Data())); 
-  v->SavePicture(Form("fig/%s/%s_pers_bottom.png",time.Data(),time.Data())); 
+  v->SavePicture(Form("fig/%s_%i/%s_%i_pers_bottom.png",time.Data(),id,time.Data(),id)); 
   // perspectivpe view top component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(4, 30., center, -1., -1.); 
   v->CurrentCamera().Truck(-95,125); 
-  //v->SavePicture(Form("fig/%s/%s_pers_top.pdf",time.Data(),time.Data())); 
-  v->SavePicture(Form("fig/%s/%s_pers_top.png",time.Data(),time.Data()));  
+  v->SavePicture(Form("fig/%s_%i/%s_%i_pers_top.png",time.Data(),id,time.Data(),id));  
   // side view top component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, 0.01, 0.); 
   v->CurrentCamera().Truck(-180,0); 
-  //v->SavePicture(Form("fig/%s/%s_side_top.pdf",time.Data(),time.Data())); 
-  v->SavePicture(Form("fig/%s/%s_side_top.png",time.Data(),time.Data()));  
+  v->SavePicture(Form("fig/%s_%i/%s_%i_side_top.png",time.Data(),id,time.Data(),id));  
   // side view bottom component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, 0.01, 0.); 
   v->CurrentCamera().Truck(180,0); 
-  //v->SavePicture(Form("fig/%s/%s_side_bottom.pdf",time.Data(),time.Data())); 
-  v->SavePicture(Form("fig/%s/%s_side_bottom.png",time.Data(),time.Data()));  
+  v->SavePicture(Form("fig/%s_%i/%s_%i_side_bottom.png",time.Data(),id,time.Data(),id));  
   // top view top component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, -3.141592/2+0.01, 0.0); 
   v->CurrentCamera().Truck(-180,0); 
-  //v->SavePicture(Form("fig/%s/%s_top_top.pdf",time.Data(),time.Data())); 
-  v->SavePicture(Form("fig/%s/%s_top_top.png",time.Data(),time.Data()));  
+  v->SavePicture(Form("fig/%s_%i/%s_%i_top_top.png",time.Data(),id,time.Data(),id));  
   // top view bottom component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, -3.141592/2+0.01, 0.0); 
   v->CurrentCamera().Truck(180,0); 
-  //v->SavePicture(Form("fig/%s/%s_top_bottom.pdf",time.Data(),time.Data())); 
-  v->SavePicture(Form("fig/%s/%s_top_bottom.png",time.Data(),time.Data()));  
-  
+  v->SavePicture(Form("fig/%s_%i/%s_%i_top_bottom.png",time.Data(),id,time.Data(),id));  
+*/  
   v->DoDraw();  
 
   // cleaning
@@ -582,10 +618,20 @@ void milliDspOne(TString data, bool onlyMQ, bool drawHits=true)
 
 // --------------------------------------------------------------------- //
 void milliDsp()
-{
-  bool onlyMQ=true;
+{ 
+  // 
+  if(showBar) 
+  { 
+    showRow1=true;
+    showRow2=true;
+    showRow3=true;
+  }
+  bool onlyMQ=false;
+  int id=0;
   //fstream fin("data/data_sync_mqtime_20171101.txt");
-  fstream fin("test_dsp.txt");
+  //fstream fin("mq_run374_layer2_cosmics.txt");
+  //fstream fin("thru_frac.txt");
+  fstream fin("full.txt");
   string line;
   if(fin.is_open()) {
     while(fin.good()){
@@ -593,8 +639,10 @@ void milliDsp()
       // get a line from fin
       getline(fin, line);  
       if( line.find(" ")==string::npos ) continue;
+      if( line.find("#")!=string::npos ) continue;
       TString data = line; 
-      milliDspOne(data, onlyMQ);
+      milliDspOne(data, onlyMQ, id);
+      id++; 
     }
   }
   fin.close();
