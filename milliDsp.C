@@ -1,5 +1,4 @@
 #include "TGeoManager.h"
-
 //
 // Location of hodoscope 
 //
@@ -21,6 +20,17 @@ bool showSlab=true;
 bool showSheet=true;
 bool showHS=true;
 bool showPack=false;
+
+// nPEcut 
+float nPEcut[32] = 
+{500, 500, 500, 500, 500,
+ 500, 500, 500, 500, 500, 
+ 5,   5,   500, 500, 6, 
+ 10000, 500, 500, 200, 10, 
+ 200, 200, 500, 500, 500, 
+ 500, 15,  10,  100, 5, 
+ 20, 10};
+
 
 // ------------------------------------------------------------------------
 //  Fit 
@@ -105,22 +115,22 @@ std::vector<int> convertRawToPhysCh(unsigned int raw_ch, bool isHS)
   }
   else 
   { 
-     if(raw_ch==0)        {phys_ch[0]=  0;  phys_ch[1]=  2;  phys_ch[2]=  4;} 
-     else if(raw_ch==1)   {phys_ch[0]=  0;  phys_ch[1]=  2;  phys_ch[2]=  3;} 
-     else if(raw_ch==2)   {phys_ch[0]=  0;  phys_ch[1]=  2;  phys_ch[2]=  2;} 
-     else if(raw_ch==3)   {phys_ch[0]=  0;  phys_ch[1]=  2;  phys_ch[2]=  1;} 
-     else if(raw_ch==4)   {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  4;} 
-     else if(raw_ch==5)   {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  3;} 
-     else if(raw_ch==6)   {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  2;} 
-     else if(raw_ch==7)   {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  1;} 
-     else if(raw_ch==8)   {phys_ch[0]=  0;  phys_ch[1]= -2;  phys_ch[2]=  1;} 
-     else if(raw_ch==9)   {phys_ch[0]=  0;  phys_ch[1]= -2;  phys_ch[2]=  2;} 
-     else if(raw_ch==10)  {phys_ch[0]=  0;  phys_ch[1]= -2;  phys_ch[2]=  3;} 
-     else if(raw_ch==11)  {phys_ch[0]=  0;  phys_ch[1]= -2;  phys_ch[2]=  4;} 
-     else if(raw_ch==12)  {phys_ch[0]=  0;  phys_ch[1]= -1;  phys_ch[2]=  1;} 
-     else if(raw_ch==13)  {phys_ch[0]=  0;  phys_ch[1]= -1;  phys_ch[2]=  2;} 
-     else if(raw_ch==14)  {phys_ch[0]=  0;  phys_ch[1]= -1;  phys_ch[2]=  3;} 
-     else if(raw_ch==15)  {phys_ch[0]=  0;  phys_ch[1]= -1;  phys_ch[2]=  4;} 
+     if(raw_ch==0)        {phys_ch[0]=  0;  phys_ch[1]=  2;  phys_ch[2]=  4+8;} 
+     else if(raw_ch==1)   {phys_ch[0]=  0;  phys_ch[1]=  2;  phys_ch[2]=  3+8;} 
+     else if(raw_ch==2)   {phys_ch[0]=  0;  phys_ch[1]=  2;  phys_ch[2]=  2+8;} 
+     else if(raw_ch==3)   {phys_ch[0]=  0;  phys_ch[1]=  2;  phys_ch[2]=  1+8;} 
+     else if(raw_ch==4)   {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  4+8;} 
+     else if(raw_ch==5)   {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  3+8;} 
+     else if(raw_ch==6)   {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  2+8;} 
+     else if(raw_ch==7)   {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  1+8;} 
+     else if(raw_ch==8)   {phys_ch[0]=  0;  phys_ch[1]= -2;  phys_ch[2]=  1+4;} 
+     else if(raw_ch==9)   {phys_ch[0]=  0;  phys_ch[1]= -2;  phys_ch[2]=  2+4;} 
+     else if(raw_ch==10)  {phys_ch[0]=  0;  phys_ch[1]= -2;  phys_ch[2]=  3+4;} 
+     else if(raw_ch==11)  {phys_ch[0]=  0;  phys_ch[1]= -2;  phys_ch[2]=  4+4;} 
+     else if(raw_ch==12)  {phys_ch[0]=  0;  phys_ch[1]= -1;  phys_ch[2]=  1+4;} 
+     else if(raw_ch==13)  {phys_ch[0]=  0;  phys_ch[1]= -1;  phys_ch[2]=  2+4;} 
+     else if(raw_ch==14)  {phys_ch[0]=  0;  phys_ch[1]= -1;  phys_ch[2]=  3+4;} 
+     else if(raw_ch==15)  {phys_ch[0]=  0;  phys_ch[1]= -1;  phys_ch[2]=  4+4;} 
      else if(raw_ch==16)  {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  1;} 
      else if(raw_ch==17)  {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  2;} 
      else if(raw_ch==18)  {phys_ch[0]=  0;  phys_ch[1]=  1;  phys_ch[2]=  3;} 
@@ -178,9 +188,9 @@ std::vector<float> convertPhysChToCoord(std::vector<int> phys_ch, bool isHS)
       // top: z<0
       else 
       { 
-        // x
-        if(phys_ch_x>0) x = space_btw_packs/2 + 2./2 + (phys_ch_x-1)*2. + (phys_ch_x-1)*0.2;   
-        else x = -1*space_btw_packs/2 - 2./2 + (phys_ch_x+1)*2. + (phys_ch_x+1)*0.2;   
+        // x: +/- 0.2 is put at the end to make the fit more reasonable
+        if(phys_ch_x>0) x = space_btw_packs/2 + 2./2 + (phys_ch_x-1)*2. + (phys_ch_x-1)*0.2 + 0.2;    
+        else x = -1*space_btw_packs/2 - 2./2 + (phys_ch_x+1)*2. + (phys_ch_x+1)*0.2 - 0.2;  
         // z 
         z = -180 - 10 - 0.5 + (1+phys_ch_z)*2. - 2./2 + (1+phys_ch_z)*0.2; 
         // y 
@@ -190,8 +200,8 @@ std::vector<float> convertPhysChToCoord(std::vector<int> phys_ch, bool isHS)
       ey = TMath::Sqrt(45.*45./12.);
       ez = TMath::Sqrt(2.*2./12.);
   
-      ex = ex/10;
-      ez = ez/10;
+      ex = ex/100;
+      ez = ez/100;
     }
     // horizontal: x=0 
     if(phys_ch_x==0)
@@ -215,13 +225,31 @@ std::vector<float> convertPhysChToCoord(std::vector<int> phys_ch, bool isHS)
       ey = TMath::Sqrt(2.*2./12.);
       ez = TMath::Sqrt(2.*2./12.);
       
-      ey = ey/10;
-      ez = ez/10;
+      ey = ey/100;
+      ez = ez/100;
     }
   }
   else 
   {
-    cout << "TP ... " << endl;
+      // y 
+      if(phys_ch_y>0)
+      {
+          y = 17 + 1 + (phys_ch_y-1)*2. + (phys_ch_y-1)*0.2; 
+
+          if(phys_ch_z>8) // pack8 
+          { 
+            z = 180 - 53 - 2/2 - (12-phys_ch_z)*2.+ (12-phys_ch_z)*0.2; 
+          }
+          else // pack10
+          {
+            z = 180 - 154 + 2/2 + (phys_ch_z-1)*2.+ (phys_ch_z-1)*0.2; 
+          }
+      }
+      else 
+      { 
+          y = -22.5 - 1 + (phys_ch_y+1)*2. + (phys_ch_y+1)*0.2; 
+          z = 180 - 118 + 2/2 + (phys_ch_z-5)*2.+ (phys_ch_z-5)*0.2; 
+      }
   }
 
   std::vector<float> coord_vec;
@@ -263,6 +291,36 @@ TPolyLine3D* fittedTrack(double *p)
   return l;
 }
 
+void fittedTrack(double *p, TGeoTrack* &geo_track)
+{
+  int ndiv = 1000;
+  double t0 = 0; 
+  double dt = 200;
+  for(int i=0; i<2*ndiv; i++)
+  {
+    double t = t0 + dt*i/ndiv - dt;
+    double x,y,z;
+    line(t,p,x,y,z);
+    geo_track->AddPoint(x,y,z,t); // x,y,z,t
+  }
+  geo_track->SetLineColor(kRed);
+  geo_track->SetLineWidth(4);
+}
+
+void fittedTrack(double *p, TGeoVolume* &top, TGeoVolume* &track_dot)
+{
+  int ndiv = 1000;
+  double t0 = 0; 
+  double dt = 200;
+  for(int i=0; i<2*ndiv; i++)
+  {
+    double t = t0 + dt*i/ndiv - dt;
+    double x,y,z;
+    line(t,p,x,y,z);
+    top->AddNodeOverlap(track_dot,1,new TGeoTranslation(x,y,z));
+  }
+}
+
 // function that converts data to coordinates 
 //  - "pack" is not the labels on the boards, but the order in which data is read 
 //  - function returns the coord of the bar wrt reference point of the top/bottom 
@@ -277,7 +335,7 @@ TVector3 dataToBar(int pack, int d)
     cout << "[Error] wrong channel number" << endl;
     return cordBar;
   }
-  if(pack<0 || pack>8)  
+  if(pack<0 || pack>10)  
   {
     cout << "[Error] wrong pack number" << endl;
     return cordBar;
@@ -382,6 +440,39 @@ TVector3 dataToBar(int pack, int d)
     if(d==6) cordBar.SetXYZ(-1*htopx-2*2-2/2-0.2*2, htopy+0, htopz-10-0.5-2*0-1-0.2*0);    
     if(d==7) cordBar.SetXYZ(-1*htopx-2*3-2/2-0.2*3, htopy+0, htopz-10-0.5-2*0-1-0.2*0); 
   }
+  else if(pack==8)  // track pack 
+  { 
+    if(d==0) cordBar.SetXYZ(hbotx, 17+1+2*1+0.2*1, 180-53-2/2-2*0+0.2*0);
+    if(d==1) cordBar.SetXYZ(hbotx, 17+1+2*1+0.2*1, 180-53-2/2-2*1+0.2*1);
+    if(d==2) cordBar.SetXYZ(hbotx, 17+1+2*1+0.2*1, 180-53-2/2-2*2+0.2*2);
+    if(d==3) cordBar.SetXYZ(hbotx, 17+1+2*1+0.2*1, 180-53-2/2-2*3+0.2*3);
+    if(d==4) cordBar.SetXYZ(hbotx, 17+1+2*0+0.2*0, 180-53-2/2-2*0+0.2*0);        
+    if(d==5) cordBar.SetXYZ(hbotx, 17+1+2*0+0.2*0, 180-53-2/2-2*1+0.2*1);        
+    if(d==6) cordBar.SetXYZ(hbotx, 17+1+2*0+0.2*0, 180-53-2/2-2*2+0.2*2);        
+    if(d==7) cordBar.SetXYZ(hbotx, 17+1+2*0+0.2*0, 180-53-2/2-2*3+0.2*3);        
+  }
+  else if(pack==9)  // track pack 
+  { 
+    if(d==0) cordBar.SetXYZ(hbotx, -22.5-1+2*1+0.2*1, 180-118+2/2+2*0+0.2*0);
+    if(d==1) cordBar.SetXYZ(hbotx, -22.5-1+2*1+0.2*1, 180-118+2/2+2*1+0.2*1);
+    if(d==2) cordBar.SetXYZ(hbotx, -22.5-1+2*1+0.2*1, 180-118+2/2+2*2+0.2*2);
+    if(d==3) cordBar.SetXYZ(hbotx, -22.5-1+2*1+0.2*1, 180-118+2/2+2*3+0.2*3);
+    if(d==4) cordBar.SetXYZ(hbotx, -22.5-1+2*0+0.2*0, 180-118+2/2+2*0+0.2*0);        
+    if(d==5) cordBar.SetXYZ(hbotx, -22.5-1+2*0+0.2*0, 180-118+2/2+2*1+0.2*1);        
+    if(d==6) cordBar.SetXYZ(hbotx, -22.5-1+2*0+0.2*0, 180-118+2/2+2*2+0.2*2);        
+    if(d==7) cordBar.SetXYZ(hbotx, -22.5-1+2*0+0.2*0, 180-118+2/2+2*3+0.2*3);        
+  }
+  else if(pack==10)  // track pack 
+  { 
+    if(d==0) cordBar.SetXYZ(hbotx, 17+1+2*0+0.2*0, 180-154+2/2+2*0+0.2*0);
+    if(d==1) cordBar.SetXYZ(hbotx, 17+1+2*0+0.2*0, 180-154+2/2+2*1+0.2*1);
+    if(d==2) cordBar.SetXYZ(hbotx, 17+1+2*0+0.2*0, 180-154+2/2+2*2+0.2*2);
+    if(d==3) cordBar.SetXYZ(hbotx, 17+1+2*0+0.2*0, 180-154+2/2+2*3+0.2*3);
+    if(d==4) cordBar.SetXYZ(hbotx, 17+1+2*1+0.2*1, 180-154+2/2+2*0+0.2*0);        
+    if(d==5) cordBar.SetXYZ(hbotx, 17+1+2*1+0.2*1, 180-154+2/2+2*1+0.2*1);        
+    if(d==6) cordBar.SetXYZ(hbotx, 17+1+2*1+0.2*1, 180-154+2/2+2*2+0.2*2);        
+    if(d==7) cordBar.SetXYZ(hbotx, 17+1+2*1+0.2*1, 180-154+2/2+2*3+0.2*3);        
+  }
   
   return cordBar;
 }
@@ -391,17 +482,17 @@ std::vector<TVector3> getHitList(TString strData, bool isVertical)
 {
   // remove space between packs
   strData.ReplaceAll(" ", "");
-   
+ 
   std::vector<TVector3> hitList;
  
-  for(int i=0; i<8*8; i++)
+  for(int i=0; i<8*11; i++)
   { 
     int pack = i/8;
     int d = i%8; 
 
-    if(isVertical && (pack==2 || pack==3 || pack==4 || pack==5)) continue;
-    if(!isVertical && (pack<2 || pack>5)) continue;
-
+    if(isVertical && (pack==2 || pack==3 || pack==4 || pack==5 || pack>=8)) continue;
+    if(!isVertical && (pack==0 || pack==1 || pack==6 || pack==7)) continue;
+    
     if(strData[i]=='1')  
     {
       //cout << pack << " " << d << " " << strData[i] << endl; // FIXME
@@ -629,10 +720,10 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
   if(showSlab)
   {
     slab->SetLineColor(89);  
-    if(milliHits.at(21)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-178)); // slab3 1.5 
-    if(milliHits.at(28)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-73));  // slab2 1.12
+    if(milliHits.at(21)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-181.5)); // slab3 1.5 
+    if(milliHits.at(28)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,-72.5));  // slab2 1.12
     if(milliHits.at(20)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,53));   // slab1 1.4
-    if(milliHits.at(18)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,175));  // slab0 1.2
+    if(milliHits.at(18)) top->AddNodeOverlap(slab,1,new TGeoTranslation(0,7.5,174));  // slab0 1.2
   }
   
   if(showSheet)
@@ -640,17 +731,17 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
     hsheet->SetLineColor(30);  
     vsheet->SetLineColor(30);  
     // layer 1
-    if(milliHits.at(27)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, 120+2, rot_sheetm)); // 1.11
-    if(milliHits.at(10)) top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,120+2));                                // 0.10
-    if(milliHits.at(29)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, 120+2, rot_sheetp));  // 1.13
+    if(milliHits.at(27)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-7, 120+2, rot_sheetm)); // 1.11
+    if(milliHits.at(10)) top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,16,120+2));                                // 0.10
+    if(milliHits.at(29)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-7, 120+2, rot_sheetp));  // 1.13
     // layer 2 
-    if(milliHits.at(30)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, 0, rot_sheetm));   // 1.14
-    if(milliHits.at(11)) top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,0));                                  // 0.11
-    if(milliHits.at(19)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, 0, rot_sheetp));    // 1.3
+    if(milliHits.at(30)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-7, 0, rot_sheetm));   // 1.14
+    if(milliHits.at(11)) top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,16,0));                                  // 0.11
+    if(milliHits.at(19)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-7, 0, rot_sheetp));    // 1.3
     // layer 3 
-    if(milliHits.at(31)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-8, -120-5, rot_sheetm)); // 1.15
-    if(milliHits.at(14)) top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,15,-120-5));                                // 0.14
-    if(milliHits.at(26)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-8, -120-5, rot_sheetp));  // 1.10
+    if(milliHits.at(31)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(-10.5+2, 10.75*2.54/2-7, -120-5, rot_sheetm)); // 1.15
+    if(milliHits.at(14)) top->AddNodeOverlap(hsheet,1,new TGeoTranslation(0,16,-120-5));                                // 0.14
+    if(milliHits.at(26)) top->AddNodeOverlap(vsheet,1,new TGeoCombiTrans(10.5-2, 10.75*2.54/2-7, -120-5, rot_sheetp));  // 1.10
   } 
   
   //------------------ Create hodoscope ------------------------------- 
@@ -673,10 +764,16 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
       TGeoVolume *hhhit=geom->MakeBox("hhhit",Iron,22.5,1,1);
       hhhit->SetLineColor(46);  
 
-      for(int i=0; i<hhitList.size(); i++) 
+      for(int i=0; i<hhitList.size(); i++)
+      {
         top->AddNodeOverlap(hhhit,1,new TGeoTranslation(hhitList.at(i).X(), hhitList.at(i).Y(), hhitList.at(i).Z()));
+        cout << hhitList.at(i).X() << " " <<  hhitList.at(i).Y() << " " << hhitList.at(i).Z() << endl;
+      }
       for(int i=0; i<vhitList.size(); i++) 
+      {
         top->AddNodeOverlap(vhhit,1,new TGeoTranslation(vhitList.at(i).X(), vhitList.at(i).Y(), vhitList.at(i).Z()));
+        cout << vhitList.at(i).X() << " " <<  vhitList.at(i).Y() << " " << vhitList.at(i).Z() << endl;
+      } 
     } 
     else 
     {
@@ -745,12 +842,6 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
       top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 120-2.1*2));
       top->AddNodeOverlap(hhhit,1,new TGeoTranslation(0, 17+2.1, 120-2.1*3));
   }
-  // 
-  top->SetVisibility(0);
-  geom->CloseGeometry();
-
-  //------------------draw on GL viewer------------------------------- 
-  top->Draw("ogl"); 
   
   //------------------------------- 
   //  Draw tracks 
@@ -759,11 +850,15 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
   // 1. do the fit
   std::vector<int> hs_data;
   std::vector<int> tp_data;
+  int n_hs_ver=0;
+  int n_hs_hor=0;
   int n_hs_bot=0;
   int n_hs_top=0;
   for(int i=0; i<64; i++) 
   {
     if(hsData[i]=='1') hs_data.push_back(i);
+    if((i<16 || i>=48) && hsData[i]=='1') n_hs_ver++; 
+    if((i>=16 && i<48) && hsData[i]=='1') n_hs_hor++; 
     if(i<32 && hsData[i]=='1') n_hs_bot++; 
     if(i>=32 && hsData[i]=='1') n_hs_top++; 
   }
@@ -772,13 +867,17 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
     if(hsData[i]=='1') tp_data.push_back(i-65);
   }
   cout << "HS data size: " << hs_data.size() << endl;
+  cout << "  n_hs_ver: " << n_hs_ver << endl;
+  cout << "  n_hs_hor: " << n_hs_hor << endl;
   cout << "  n_hs_bot: " << n_hs_bot << endl;
   cout << "  n_hs_top: " << n_hs_top << endl;
   cout << "TP data size: " << tp_data.size() << endl;
 
   // do fit only when there's at least one this in each side of hs 
   bool doTrackFit = false;
-  doTrackFit = n_hs_bot>1 && n_hs_top>1; 
+  doTrackFit = n_hs_ver>1 && n_hs_hor>1; 
+  //doTrackFit = n_hs_bot>1 && n_hs_top>1; 
+
   TPolyLine3D* track;
   
   if(doTrackFit) 
@@ -795,22 +894,17 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
     Double_t xz_ex[xz_n], xz_ey[xz_n], xz_ez[xz_n];
     Double_t yz_x[yz_n], yz_y[yz_n], yz_z[yz_n];
     Double_t yz_ex[yz_n], yz_ey[yz_n], yz_ez[yz_n];
-    cout << "Number of xz hits: " << xz_n << endl; 
-    cout << "Number of yz hits: " << yz_n << endl; 
 
     // 1. convert to physical channels 
     // Hodoscope 
     // vertical 
+    cout << "Number of xz hits: " << xz_n << endl; 
     int xz_i = 0;
     for(int i=0; i<hs_data.size(); i++)
     { 
       std::vector<int> phys_ch = convertRawToPhysCh(hs_data.at(i), true);
-      cout << hs_data.at(i) << " :: " << phys_ch[0] << " " << phys_ch[1] << " " << phys_ch[2] << endl; 
       std::vector<float> coord_ch = convertPhysChToCoord(phys_ch, true);
-      cout << coord_ch[0] << " +/- " << coord_ch[3] << endl; 
-      cout << coord_ch[1] << " +/- " << coord_ch[4] << endl; 
-      cout << coord_ch[2] << " +/- " << coord_ch[5] << endl; 
-      cout << endl; 
+      
       if(hs_data.at(i)<16 || hs_data.at(i)>=48)
       { 
         xz_x[xz_i]  = coord_ch[0];
@@ -826,6 +920,7 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
       coord_ch.clear(); 
     }
     // horizontal 
+    cout << "Number of yz hits: " << yz_n << endl; 
     int yz_i = 0;
     for(int i=0; i<hs_data.size(); i++)
     { 
@@ -877,14 +972,14 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
     if(yz_n>1) g_yz->Fit("f_yz");
   
     cout << " -- Fit results -- " << endl;
-    cout << f_xz->GetParameter(0) << " " << f_xz->GetParameter(1) << " " 
+    cout << " xz slope: " << f_xz->GetParameter(0) << ", intercept: " << f_xz->GetParameter(1) << " " 
          << f_xz->GetChisquare() << "/" << f_xz->GetNDF() << endl;
-    cout << f_yz->GetParameter(0) << " " << f_yz->GetParameter(1) << " " 
+    cout << " yz slope: " << f_yz->GetParameter(0) << ", intercept:" << f_yz->GetParameter(1) << " " 
          << f_yz->GetChisquare() << "/" << f_yz->GetNDF() << endl;
      
   
     // 2. draw the fitted line  
-    double parFit[4]={-100000,100000000,-100000,1000000000};
+    double parFit[4]={-1000,1000000,-1000,1000000};
     if(xz_n>1)
     {
       parFit[0] =  -1.*f_xz->GetParameter(1)/f_xz->GetParameter(0);  
@@ -896,9 +991,36 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
       parFit[3] =  1./f_yz->GetParameter(0);
     }
     track = fittedTrack(parFit);
-    track->Draw("l same");
+
+    // TGeoTrack
+    TGeoTrack *geo_track = new TGeoTrack(0,-13); 
+    fittedTrack(parFit, geo_track); 
+    int index = geom->AddTrack(0,-13,geo_track);
+    geom->SetTminTmax(-200,200);
+    //geom->DrawTracks("");
+    
+    //fittedTrack(parFit, top, track_dot); 
+    int ndiv = 200;
+    double t0 = 0; 
+    double dt = 200;
+    for(int i=0; i<2*ndiv; i++)
+    {
+      double t = t0 + dt*i/ndiv - dt;
+      double x,y,z;
+      line(t,parFit,x,y,z);
+      TGeoVolume *track_dot = geom->MakeSphere(Form("track_dot_%i",i),Iron,0,0.2);
+      track_dot->SetFillColor(kRed);
+      track_dot->SetLineColor(kRed);
+      track_dot->SetLineWidth(2);
+      top->AddNodeOverlap(track_dot,1,new TGeoTranslation(x,y,z));
+    }
   }
   // --------------------------------------------------
+  
+  //------------------draw on GL viewer------------------------------- 
+  top->SetVisibility(0);
+  //geom->CloseGeometry();
+  top->Draw("ogl"); 
 
   TGLViewer * v = (TGLViewer *)gPad->GetViewer3D();
   // lights 
@@ -909,52 +1031,52 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
   v->SetStyle(TGLRnrCtx::kOutline); 
   //v->SetStyle(TGLRnrCtx::kWireFrame); 
   //v->SetStyle(TGLRnrCtx::kFill); 
+  if(doTrackFit) geom->DrawTracks("/*");
   // Camera 
   v->SetCurrentCamera(TGLViewer::kCameraPerspXOZ); 
   Double_t center[3]={0,0,0}; 
   // side view
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(6, 30., center, 0.01, -3.141592); 
-  if(doTrackFit) track->Draw("l same");
-  v->SavePictureUsingFBO(Form("fig/run%s_file%s_event%s/side.png",run.Data(), file.Data(), event.Data()),1000,1000,0.01); 
+  v->SavePictureUsingFBO(Form("fig/run%s_file%s_event%s/run%s_file%s_event%s_side.png",run.Data(),file.Data(),event.Data(),run.Data(),file.Data(),event.Data()),1000,200,0); 
   // top view
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(6, 30., center, -3.141592/2+0.01, -3.141592); 
-  v->SavePictureUsingFBO(Form("fig/run%s_file%s_event%s/top.png",run.Data(), file.Data(), event.Data()),1000,1000,0.01); 
+  v->SavePictureUsingFBO(Form("fig/run%s_file%s_event%s/run%s_file%s_event%s_top.png",run.Data(),file.Data(),event.Data(),run.Data(),file.Data(),event.Data()),1000,200,0); 
   // perspectivpe view
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(25, 30., center, -0.5, -2); 
-  v->SavePictureUsingFBO(Form("fig/run%s_file%s_event%s/pers.png",run.Data(), file.Data(), event.Data()),1000,1000,0.01); 
+  v->SavePictureUsingFBO(Form("fig/run%s_file%s_event%s/run%s_file%s_event%s_pers.png",run.Data(),file.Data(),event.Data(),run.Data(),file.Data(),event.Data()),1000,1000,0.01); 
   // perspectivpe view bottomw component
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, -1., -1.); 
   v->CurrentCamera().Truck(95,-125); 
-  v->SavePicture(Form("fig/run%s_file%s_event%s/pers_bottom.png",run.Data(), file.Data(), event.Data())); 
+  v->SavePicture(Form("fig/run%s_file%s_event%s/run%s_file%s_event%s_pers_bottom.png",run.Data(),file.Data(),event.Data(),run.Data(),file.Data(),event.Data())); 
   // perspectivpe view top component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(4, 30., center, -1., -1.); 
   v->CurrentCamera().Truck(-95,125); 
-  v->SavePicture(Form("fig/run%s_file%s_event%s/pers_top.png",run.Data(), file.Data(), event.Data())); 
+  v->SavePicture(Form("fig/run%s_file%s_event%s/run%s_file%s_event%s_pers_top.png",run.Data(),file.Data(),event.Data(),run.Data(),file.Data(),event.Data())); 
   // side view top component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, 0.01, 0.); 
   v->CurrentCamera().Truck(-180,0); 
-  v->SavePicture(Form("fig/run%s_file%s_event%s/side_top.png",run.Data(), file.Data(), event.Data())); 
+  v->SavePicture(Form("fig/run%s_file%s_event%s/run%s_file%s_event%s_side_top.png",run.Data(),file.Data(),event.Data(),run.Data(),file.Data(),event.Data())); 
   // side view bottom component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, 0.01, 0.); 
   v->CurrentCamera().Truck(180,0); 
-  v->SavePicture(Form("fig/run%s_file%s_event%s/side_bottom.png",run.Data(), file.Data(), event.Data())); 
+  v->SavePicture(Form("fig/run%s_file%s_event%s/run%s_file%s_event%s_side_bottom.png",run.Data(),file.Data(),event.Data(),run.Data(),file.Data(),event.Data())); 
   // top view top component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, -3.141592/2+0.01, 0.0); 
   v->CurrentCamera().Truck(-180,0); 
-  v->SavePicture(Form("fig/run%s_file%s_event%s/top_top.png",run.Data(), file.Data(), event.Data())); 
+  v->SavePicture(Form("fig/run%s_file%s_event%s/run%s_file%s_event%s_top_top.png",run.Data(),file.Data(),event.Data(),run.Data(),file.Data(),event.Data())); 
   // top view bottom component 
   v->CurrentCamera().Reset(); 
   v->CurrentCamera().Configure(5, 30., center, -3.141592/2+0.01, 0.0); 
   v->CurrentCamera().Truck(180,0); 
-  v->SavePicture(Form("fig/run%s_file%s_event%s/top_bottom.png",run.Data(), file.Data(), event.Data())); 
+  v->SavePicture(Form("fig/run%s_file%s_event%s/run%s_file%s_event%s_top_bottom.png",run.Data(),file.Data(),event.Data(),run.Data(),file.Data(),event.Data())); 
   v->DoDraw();  
 
   // cleaning
@@ -963,7 +1085,7 @@ void milliDspOne(TString time, TString run, TString file, TString event, TString
 } 
 
 // --------------------------------------------------------------------- //
-void milliDsp(int ievt)
+void milliDsp(int FILE=0, int EVENT=0)
 { 
   // 
   if(showBar) 
@@ -991,47 +1113,13 @@ void milliDsp(int ievt)
   vector<float> *chan=0;  t->SetBranchAddress("chan",    &chan);
   vector<float> *nPE=0;   t->SetBranchAddress("nPE",     &nPE);
  
-  // nPE 
-  float nPEcut[32]; 
-  nPEcut[0] = 500;
-  nPEcut[1] = 500;
-  nPEcut[2] = 500;
-  nPEcut[3] = 500;
-  nPEcut[4] = 500;
-  nPEcut[5] = 500;
-  nPEcut[6] = 500;
-  nPEcut[7] = 500;
-  nPEcut[8] = 500;
-  nPEcut[9] = 500;
-  nPEcut[10] = 5;
-  nPEcut[11] = 5;
-  nPEcut[12] = 500;
-  nPEcut[13] = 500;
-  nPEcut[14] = 6;
-  nPEcut[15] = 10000;
-  nPEcut[16] = 500;
-  nPEcut[17] = 500;
-  nPEcut[18] = 200;
-  nPEcut[19] = 10;
-  nPEcut[20] = 200;
-  nPEcut[21] = 200;
-  nPEcut[22] = 500;
-  nPEcut[23] = 500;
-  nPEcut[24] = 500;
-  nPEcut[25] = 500;
-  nPEcut[26] = 15;
-  nPEcut[27] = 10;
-  nPEcut[28] = 100;
-  nPEcut[29] = 5;
-  nPEcut[30] = 20;
-  nPEcut[31] = 10;
-
   //for(int ievt=0; ievt<t->GetEntries(); ievt++)
-  //for(int ievt=0; ievt<10; ievt++)
-  //{
-    //t->GetEntry(ievt); 
+  for(int ievt=0; ievt<100; ievt++)
+  {
     t->GetEntry(ievt); 
 
+    if(FILE!=0 && EVENT!=0 && FILE!=file && EVENT!=event) continue;
+ 
     //milliDspOne(TString time, TString run, TString file, TString event, TString beam, TString mq_data_str, TString hs_data_str, bool onlyMQ, bool drawHits=true)
     //2222222222.22222  111 111   111 1 00100000000000001010110011001000 0000000010001000000000001000100000000000010001000000000000010001 000000000000000000000000
     
@@ -1095,7 +1183,7 @@ void milliDsp(int ievt)
 
     mqData="";
     hsData="";
-  //}
+  }
 
   // text file input
   /* 
